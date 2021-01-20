@@ -16,6 +16,9 @@ class govinfoSettingsForm extends ConfigFormBase {
 
   private $db;
 
+  /**
+   * Load our usable objects into scope.
+   */
   public function __construct() {
     $this->db = \Drupal::database();
   }
@@ -42,6 +45,8 @@ class govinfoSettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('govinfo.settings');
     $api_key = ($config->get('api_key') != NULL) ? $config->get('api_key') : NULL;
+    $enabled = $config->get('enabled_codes');
+    $enabled = (array_combine($enabled, $enabled));
 
     $data_gov_link = Link::fromTextAndUrl($this->t('here'), Url::fromUri('https://api.data.gov/signup'));
     $form['api_key'] = [
@@ -54,6 +59,45 @@ class govinfoSettingsForm extends ConfigFormBase {
       '#required' => TRUE,
       '#weight' => 10,
     ];
+
+    // Check to see if we've loaded our collections. If we have, allow them to be selected.
+    $collection = $this->db->select('govinfo_collections', 'gc');
+    $collection_count = $collection
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+
+    if ($collection_count > 0) {
+      $result = $collection
+        ->fields('gc', ['code', 'name', 'package_count', 'granule_count'])
+        ->execute();
+
+      $header = [
+        'code' => $this->t('Code'),
+        'name' => $this->t('Name'),
+        'package_count' => $this->t('Package Count'),
+        'granule_count' => $this->t('Granule Count'),
+      ];
+
+      $options = [];
+      foreach ($result as $record) {
+        $options[$record->code] = [
+          'code' => $record->code,
+          'name' => $record->name,
+          'package_count' => $record->package_count,
+          'granule_count' => $record->granule_count,
+        ];
+      }
+
+      $form['options'] = [
+        '#type' => 'tableselect',
+        '#header' => $header,
+        '#options' => $options,
+        '#empty' => $this->t('THERE ARE NO govinfo RECORDS AVAILABLE.'),
+        '#default_value' => $enabled,
+      ];
+    }
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -73,8 +117,22 @@ class govinfoSettingsForm extends ConfigFormBase {
       ->set('api_key', $form_state->getValue('api_key'))
       ->save();
     
+    $options = $form_state->getValue('options');
+    if (!empty($options)) {
+      $enabled = [];
+      foreach ($options as $key=>$value) {
+        if ($key == $value) {
+          $enabled[] = $value;
+        }
+      }
+      $this->config('govinfo.settings')
+        ->set('enabled_codes', $enabled)
+        ->save();
+    }
+
     // Now that we have our key, attempt to pull the collections and store them
-    // so that we can display them on the refreshed screen.
+    // so that we can display them on the refreshed screen. This also updates on
+    // every submission of selected keys.
     $api = new Api(
       new \GuzzleHttp\Client(), 
       $form_state->getValue('api_key')
@@ -84,14 +142,14 @@ class govinfoSettingsForm extends ConfigFormBase {
     $collections = $collection_index['collections'];
 
     foreach ($collections as $collection) {
-      $this->db->insert('govinfo_collections')
-      ->fields([
-        'code' => $collection['collectionCode'],
-        'name' => $collection['collectionName'],
-        'package_count' => (int) $collection['packageCount'],
-        'granule_count' => (int) $collection['granuleCount'],
-      ])
-      ->execute();
+      $this->db->merge('govinfo_collections')
+        ->key('code', $collection['collectionCode'])
+        ->fields([
+          'name' => $collection['collectionName'],
+          'package_count' => (int) $collection['packageCount'],
+          'granule_count' => (int) $collection['granuleCount'],
+        ])
+        ->execute();
     }
   }
 }
