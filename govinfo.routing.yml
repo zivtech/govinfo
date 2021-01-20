@@ -1,0 +1,7 @@
+govinfo.settings:
+  path: 'admin/config/services/govinfo'
+  defaults:
+    _form: '\Drupal\govinfo\Form\govinfoSettingsForm'
+    _title: 'govinfo Settings'
+  requirements:
+    _permission: 'administer govinfo'

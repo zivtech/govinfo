@@ -1,0 +1,3 @@
+administer govinfo:
+  title: 'Admister govinfo configurations'
+  description: 'Allow the changing of govinfo settings.'

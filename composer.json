@@ -1,0 +1,11 @@
+{
+    "name": "mbagnall/govinfo",
+    "description": "A Drupal interface to GovInfo data.",
+    "type": "drupal-module",
+    "authors": [
+        {
+            "name": "Michael Bagnall",
+            "email": "mrbagnall@icloud.com"
+        }
+    ]
+}

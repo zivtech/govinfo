@@ -1,0 +1,20 @@
+<?php
+
+/**
+ * @file
+ * Contains govinfo.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function govinfo_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.govinfo':
+      $output = '<h3>' . t('govinfo help') . '</h3>';
+      return $output;
+    default:
+  }
+}
