@@ -5,3 +5,10 @@ govinfo.settings:
     _title: 'govinfo Settings'
   requirements:
     _permission: 'administer govinfo'
+govinfo.collections:
+  path: 'admin/config/services/govinfo/collections'
+  defaults:
+    _form: '\Drupal\govinfo\Form\govinfoCollectionsForm'
+    _title: 'govinfo Collections'
+  requirements:
+    _permission: 'administer govinfo'

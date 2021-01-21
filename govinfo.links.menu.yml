@@ -1,5 +1,10 @@
 govinfo.settings:
-  title: 'govinfo Settings'
+  title: 'govinfo'
   description: 'Configuration options for govinfo data on data.gov'
   route_name: govinfo.settings
   parent: system.admin_config_services
+govinfo.collections:
+  title: 'govinfo Collections'
+  description: 'Select govinfo collections to make available on our site.'
+  route_name: govinfo.collections
+  parent: govinfo.settings
