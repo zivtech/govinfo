@@ -62,9 +62,9 @@ class govinfoCollectionsForm extends ConfigFormBase {
     }
     else {
       // Now that we have our key, attempt to pull the collections and store them
-      // so that we can display them on the refreshed screen. This also updates on
-      // every submission of selected keys.
-
+      // so that we can display them on the refreshed screen and in other interface
+      // locations.
+      
       $collection = new Collection($this->api);
       $collection_index = $collection->index();
       $collections = $collection_index['collections'];

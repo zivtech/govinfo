@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Implements hook_schema().
+ */
 function govinfo_schema() {
   $schema = [];
   $schema['govinfo_collections'] = [
@@ -33,5 +36,69 @@ function govinfo_schema() {
     ],
     'primary key' => ['code'],
   ];
+  $schema['govinfo_collection_meta'] = [
+    'fields' => [
+      'cid' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'package_id' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'last_modified' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'package_link'  => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'doc_class'  => [
+        'type' => 'varchar',
+        'length' => 24,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'title'  => [
+        'type' => 'varchar',
+        'size' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'congress'  => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'default' => NULL,
+      ],
+      'date_issued'  => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+    ],
+    'primary key' => ['cid'],
+    'unique keys' => [
+      'package_id' => ['package_id'],
+    ],
+    'indexes' => [
+      'doc_class' => [
+        'doc_class' => ['doc_class'],
+      ],
+      'congress' => [
+        'congress' => ['congress'],
+      ],
+    ],
+  ];
+
   return $schema;
 }
