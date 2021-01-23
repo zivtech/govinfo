@@ -8,7 +8,9 @@ use Drupal\Core\Link;
 use Drupal\Core\Url;
 use GovInfo\Api;
 use GovInfo\Collection;
+use GovInfo\Package;
 use GovInfo\Requestor\CollectionAbstractRequestor;
+use GovInfo\Requestor\PackageAbstractRequestor;
 
 /**
  * Class govinfoCollectionsIndexForm.
@@ -18,7 +20,8 @@ class govinfoCollectionsIndexForm extends ConfigFormBase {
   private $db;
   private $api;
   private $message;
-  private $requestor;
+  private $collectionRequestor;
+  private $packageRequestor;
 
   /**
    * Load our usable objects into scope.
@@ -30,7 +33,8 @@ class govinfoCollectionsIndexForm extends ConfigFormBase {
     $this->db = \Drupal::database();
     $this->message =  \Drupal::messenger();
     $this->api = (!empty($api_key)) ? new Api(new \GuzzleHttp\Client(), $api_key) : NULL;
-    $this->requestor = new CollectionAbstractRequestor();
+    $this->collectionRequestor = new CollectionAbstractRequestor();
+    $this->packageRequestor = new PackageAbstractRequestor();
   }
 
   /**
@@ -127,15 +131,63 @@ class govinfoCollectionsIndexForm extends ConfigFormBase {
 
       if (!empty($enabled)) {
 
+        $collection = new Collection($this->api);
+
         // Get batches by pages of metadata and not all of the individual items
         // This will reduce our timeout possibilities.
         // process the batch as pages of 100 entries. So for every 1 item in the batch,
         // we're doing 100 of whatever... collections, packages, granules, etc.
+        foreach ($enabled as $code) {
+          $this->collectionRequestor->setStrCollectionCode($code);
+          $startDate = new \DateTime('2020-01-01T20:18:10Z');
+          $this->collectionRequestor->setObjStartDate($startDate);
+          $this->collectionRequestor->setIntOffset(0);
 
-
-
-
+          do {
+            $response = $collection->item($this->collectionRequestor);
+            $this->processPackages($response['packages']);
+          } while ($response['nextPage']);
+          $this->processPackages($response['packages']);
+        }
       }
     }
   }
+
+  private function processPackages(array $packages) {
+    $pack = new Package($this->api);
+    foreach ($packages as $package) {
+      $this->packageRequestor->setStrPackageId($package['packageId']);
+      $summary = $pack->summary($this->packageRequestor);
+
+      // print "<pre>";
+      // print_r($summary);
+      // exit();
+
+      //$this->packageRequestor->setDownloadType('pdf');
+      //$pdf = $pack->summaryDownload($this->packageRequestor);
+
+      $granules = $this->getGranules($package['packageId']);
+    }
+  }
+
+  private function getGranules(string $packageId) {
+    $pack = new Package($this->api);
+    $granules = $pack->granules($this->packageRequestor);
+    foreach ($granules['granules'] as $granule) {
+      // print"<pre>";
+      // print_r($granules);
+      // exit();
+
+      $this->packageRequestor->setStrGranuleId($granule['granuleId']);
+      $granuleSummary = $pack->granuleSummary($this->packageRequestor);
+      // print "<pre>";
+      // print_r($granuleSummary);
+      // exit();
+
+    }
+
+
+
+  }
+
 }
