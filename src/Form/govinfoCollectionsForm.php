@@ -8,7 +8,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Url;
 use GovInfo\Api;
 use GovInfo\Collection;
-
+use GovInfo\Requestor\CollectionAbstractRequestor;
 /**
  * Class govinfoCollectionsForm.
  */
@@ -17,6 +17,8 @@ class govinfoCollectionsForm extends ConfigFormBase {
   private $db;
   private $api;
   private $message;
+  private $collection;
+  private $collectionAbstractRequestor;
 
   /**
    * Load our usable objects into scope.
@@ -28,6 +30,8 @@ class govinfoCollectionsForm extends ConfigFormBase {
     $this->db = \Drupal::database();
     $this->message =  \Drupal::messenger();
     $this->api = (!empty($api_key)) ? new Api(new \GuzzleHttp\Client(), $api_key) : NULL;
+    $this->collection = new Collection($this->api);
+    $this->collectionAbstractRequestor = new CollectionAbstractRequestor();
   }
 
   /**
@@ -142,6 +146,54 @@ class govinfoCollectionsForm extends ConfigFormBase {
           $enabled[] = $value;
         }
       }
+
+      /**
+       * For each enabled item, we need to call an item to get the count. In this,
+       * we generate the URL's to be used in our queue. This is better for two reasons:
+       *
+       * 1. We don't have to crawl all the URL's to calculate the URL's
+       * 2. We don't want to wait for all the crawling to happen right now.
+       * 3. We only have a limited number of api calls an hour, so we need
+       *    to meter how much calling we are doing.
+       */
+      $code = [];
+      foreach ($enabled as $collection_code) {
+        $start_date = new \DateTime('1994-01-01T20:18:10Z');
+        $this->collectionAbstractRequestor->setStrCollectionCode($collection_code);
+        $this->collectionAbstractRequestor->setObjStartDate($start_date);
+        $currentOffset = 0;
+
+        // Clear the database of any items in the current collection code.
+        $this->db->delete('govinfo_collection_meta')
+          ->condition('doc_class', $collection_code)
+          ->execute();
+
+        // Populate
+        do {
+          $this->collectionAbstractRequestor->setIntPageSize(100);
+          $this->collectionAbstractRequestor->setIntOffSet($currentOffset);
+          $item = $this->collection->item($this->collectionAbstractRequestor);
+          //$code[$collection_code]['count'] = $item['count'];
+          //$urlParts = explode('?', $item['nextPage']);
+          //$code[$collection_code]['url'] = $urlParts[0];
+          foreach ($item['packages'] as $package) {
+
+            $this->db->insert('govinfo_collection_meta')
+              ->fields([
+                'package_id' => $package['packageId'],
+                'last_modified' => strtotime($package['lastModified']),
+                'doc_class' => $package['docClass'],
+                'title' => $package['title'],
+                'congress' => ($package['congress']) ? $package['congress'] : '',
+                'date_issued' => strtotime($package['dateIssued']),
+              ])
+              ->execute();
+          }
+          $currentOffset += 100;
+        }
+        while ($package['message'] != 'No results found' && $package['nextPage'] == NULL);
+      }
+
       $this->config('govinfo.collections')
         ->set('enabled_codes', $enabled)
         ->save();

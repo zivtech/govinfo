@@ -1,10 +1,17 @@
 <?php
 
+use Drupal\Core\Database\Database;
+
 /**
  * Implements hook_schema().
  */
 function govinfo_schema() {
   $schema = [];
+
+  /**
+   * A table of the base collection data. This does not need to be an entity, so we
+   * will keep it simply in a table for reference.
+   */
   $schema['govinfo_collections'] = [
     'fields' => [
       'code' => [
@@ -36,6 +43,14 @@ function govinfo_schema() {
     ],
     'primary key' => ['code'],
   ];
+
+  /**
+   * We need a schema to track package updates. If we have package updates, then
+   * we need to re-index the granules. If not, we can skip them and save API calls.
+   * This index provides a last updated. When we load packages we can compare the
+   * last updated of that call with what is in the database and any differences
+   * can fire off a re-index.
+   */
   $schema['govinfo_collection_meta'] = [
     'fields' => [
       'cid' => [
@@ -61,6 +76,12 @@ function govinfo_schema() {
         'not null' => TRUE,
         'default' => '',
       ],
+      'last_modified'  => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
       'doc_class'  => [
         'type' => 'varchar',
         'length' => 24,
@@ -69,15 +90,15 @@ function govinfo_schema() {
       ],
       'title'  => [
         'type' => 'varchar',
-        'size' => 255,
+        'length' => 255,
         'not null' => TRUE,
         'default' => '',
       ],
       'congress'  => [
         'type' => 'varchar',
         'length' => 255,
-        'not null' => FALSE,
-        'default' => NULL,
+        'not null' => TRUE,
+        'default' => '',
       ],
       'date_issued'  => [
         'type' => 'int',
@@ -87,18 +108,85 @@ function govinfo_schema() {
       ],
     ],
     'primary key' => ['cid'],
-    'unique keys' => [
-      'package_id' => ['package_id'],
-    ],
     'indexes' => [
-      'doc_class' => [
-        'doc_class' => ['doc_class'],
-      ],
-      'congress' => [
-        'congress' => ['congress'],
-      ],
+      'doc_class' => ['doc_class'],
+      'congress' => ['congress'],
+      'package_id' => ['package_id']
     ],
   ];
 
   return $schema;
+}
+
+/**
+ * Add our govinfo_collection_meta table.
+ */
+function govinfo_update_9101() {
+  $spec = [
+    'fields' => [
+      'cid' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'package_id' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'last_modified' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'package_link'  => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'last_modified'  => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'doc_class'  => [
+        'type' => 'varchar',
+        'length' => 24,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'title'  => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'congress'  => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'date_issued'  => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+    ],
+    'primary key' => ['cid'],
+    'indexes' => [
+      'doc_class' => ['doc_class'],
+      'congress' => ['congress'],
+      'package_id' => ['package_id']
+    ],
+  ];
+
+  $schema = Database::getConnection()->schema();
+  $schema->createTable('govinfo_collection_meta', $spec);
+
 }
