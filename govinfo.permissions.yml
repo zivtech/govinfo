@@ -1,3 +1,6 @@
 administer govinfo:
-  title: 'Admister govinfo configurations'
+  title: 'Administer govinfo configurations'
   description: 'Allow the changing of govinfo settings.'
+administer govinfo summary entities:
+  title: 'Administer govinfo summary entities'
+  description: 'Allow for the viewing of govinfo summaries'

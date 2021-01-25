@@ -18,3 +18,9 @@ function govinfo_help($route_name, RouteMatchInterface $route_match) {
     default:
   }
 }
+
+
+function govinfo_rate_check($rate_limit, $rate_limit_remaining) {
+
+
+}

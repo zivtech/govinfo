@@ -27,11 +27,18 @@ class govinfoCollectionsForm extends ConfigFormBase {
     $config = $this->config('govinfo.settings');
     $api_key = ($config->get('api_key') != NULL) ? $config->get('api_key') : NULL;
 
-    $this->db = \Drupal::database();
-    $this->message =  \Drupal::messenger();
-    $this->api = (!empty($api_key)) ? new Api(new \GuzzleHttp\Client(), $api_key) : NULL;
-    $this->collection = new Collection($this->api);
-    $this->collectionAbstractRequestor = new CollectionAbstractRequestor();
+    if (!empty($api_key)) {
+      $this->db = \Drupal::database();
+      $this->message =  \Drupal::messenger();
+      $this->api = new Api(new \GuzzleHttp\Client(), $api_key);
+      $this->collection = new Collection($this->api);
+      $this->collectionAbstractRequestor = new CollectionAbstractRequestor();
+    }
+    else {
+      // If we have not configured our API key, we need to go to that page and
+      // let them know they need to configure it
+      
+    }
   }
 
   /**

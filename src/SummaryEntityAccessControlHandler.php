@@ -8,9 +8,9 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
 
 /**
- * Access controller for the Tweet entity entity.
+ * Access controller for the govinfo summary entity.
  *
- * @see \Drupal\tweet_feed\Entity\TweetEntity.
+ * @see \Drupal\govinfo\Entity\SummaryEntity.
  */
 class SummaryEntityAccessControlHandler extends EntityAccessControlHandler {
 
@@ -23,15 +23,15 @@ class SummaryEntityAccessControlHandler extends EntityAccessControlHandler {
       case 'view':
       $entity->getHashtags();
       if (!$entity->isQuotedOrRepliedTweet()) {
-        return AccessResult::allowedIfHasPermission($account, 'view base quoted or replied-to tweets.');
+        return AccessResult::allowedIfHasPermission($account, 'access content');
       }
       return AccessResult::allowedIfHasPermission($account, 'access content');
 
       case 'update':
-        return AccessResult::allowedIfHasPermission($account, 'edit tweet entities');
+        return AccessResult::allowedIfHasPermission($account, 'access content');
 
       case 'delete':
-        return AccessResult::allowedIfHasPermission($account, 'delete tweet entities');
+        return AccessResult::allowedIfHasPermission($account, 'access content');
     }
 
     // Unknown operation, no opinion.
@@ -42,7 +42,7 @@ class SummaryEntityAccessControlHandler extends EntityAccessControlHandler {
    * {@inheritdoc}
    */
   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
-    return AccessResult::allowedIfHasPermission($account, 'add tweet entities');
+    return AccessResult::allowedIfHasPermission($account, 'access content');
   }
 
 }
