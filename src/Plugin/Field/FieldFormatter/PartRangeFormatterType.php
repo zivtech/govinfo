@@ -9,17 +9,17 @@ use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Plugin implementation of the 'summary_downloads_formatter' formatter.
+ * Plugin implementation of the 'part_range_formatter' formatter.
  *
  * @FieldFormatter(
- *   id = "summary_downloads_formatter",
- *   label = @Translation("Summary Downloads"),
+ *   id = "part_range_formatter",
+ *   label = @Translation("Part Range"),
  *   field_types = {
- *     "summary_downloads_field_type"
+ *     "part_range"
  *   }
  * )
  */
-class SummaryDownloadsFormatterType extends FormatterBase {
+class PartRangeFormatterType extends FormatterBase {
 
   /**
    * {@inheritdoc}
@@ -73,23 +73,16 @@ class SummaryDownloadsFormatterType extends FormatterBase {
    */
   protected function viewValue(FieldItemInterface $item) {
     $values = $item->toArray();
-    $labels = [
-      'pdf_link' => 'PDF Summary Document',
-      'xml_link' => 'XML Summary Document',
-      'htm_link' => 'HTML Summary Document',
-      'xls_link' => 'XLS Summary Document',
-      'mods_link' => 'MODS Summary Document',
-      'premis_link' => 'Premis Summary Document',
-      'zip_link' => 'Zip Archive Summary',
-    ];
 
-    $display = NULL;
-    foreach ($values as $key => $value) {
-      if (!empty($value)) {
-        $display .= '<div class="summary-document-link"><a class="summary-document-anchor" href="/summary-download/' . base64_encode($value) . '">' . $labels[$key] . '</a></div>';
-      }
-    }
-    return $display;
+
+    // $display = NULL;
+    // foreach ($values as $key => $value) {
+    //   if (!empty($value)) {
+    //     $display .= '<div class="summary-document-link"><a class="summary-document-anchor" href="/summary-download/' . base64_encode($value) . '">' . $labels[$key] . '</div>';
+    //   }
+    // }
+    // return $display;
+    return NULL;
   }
 
 }

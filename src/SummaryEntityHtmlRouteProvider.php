@@ -43,7 +43,7 @@ class SummaryEntityHtmlRouteProvider extends AdminHtmlRouteProvider {
       $route = new Route("/admin/structure/{$entity_type->id()}/settings");
       $route
         ->setDefaults([
-          '_form' => 'Drupal\tweet_feed\Form\TweetEntitySettingsForm',
+          '_form' => 'Drupal\govinfo\Form\SummaryEntitySettingsForm',
           '_title' => "{$entity_type->getLabel()} settings",
         ])
         ->setRequirement('_permission', $entity_type->getAdminPermission())

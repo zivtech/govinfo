@@ -7,7 +7,7 @@ use Drupal\Core\Entity\EntityListBuilder;
 use Drupal\Core\Link;
 
 /**
- * Defines a class to build a listing of Tweet entity entities.
+ * Defines a class to build a listing of Summary Entities.
  *
  * @ingroup govinfo
  */
@@ -17,8 +17,9 @@ class SummaryEntityListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildHeader() {
-    $header['id'] = $this->t('Tweet ID');
-    $header['name'] = $this->t('Tweet Title');
+    $header['sid'] = $this->t('Summary Id');
+    $header['package_id'] = $this->t('Package Id');
+    $header['title'] = $this->t('Title and Category');
     return $header + parent::buildHeader();
   }
 
@@ -27,11 +28,11 @@ class SummaryEntityListBuilder extends EntityListBuilder {
    */
   public function buildRow(EntityInterface $entity) {
     /* @var $entity \Drupal\tweet_feed\Entity\TweetEntity */
-    $row['id'] = $entity->getTweetID();
-    $row['name'] = Link::createFromRoute(
-      $entity->label(),
-      'entity.tweet_entity.edit_form',
-      ['tweet_entity' => $entity->getTweetTitle()]
+    $row['sid'] = $entity->getSummaryId();
+    $row['package_id'] = $entity->getPackageId();
+    $row['title'] = Link::createFromRoute(
+      $entity->getTitle() . ': '. $entity->getCategory(),
+      'entity.summary_entity.edit_form'
     );
     return $row + parent::buildRow($entity);
   }

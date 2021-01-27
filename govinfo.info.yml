@@ -1,7 +1,7 @@
 name: govinfo
 type: module
-description: A Drupal implementation and interface for the govinfo data store.
-package: other
+description: A Drupal implementation and interface for the govinfo API.
+package: Other
 version: 1.0
 core_version_requirement: ^9
 

@@ -24,7 +24,7 @@ use Drupal\Core\Url;
  *
  * @ContentEntityType(
  *   id = "govinfo_summary",
- *   label = @Translation("govinfo Summaries"),
+ *   label = @Translation("govinfo Summary"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\govinfo\SummaryEntityListBuilder",
@@ -64,7 +64,7 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
   /**
    * {@inheritdoc}
    */
-  public static function preCreate(EntityStorageInterface $storage_controller, array &$values) {
+  public static function preCreate(EntityStorageInterface $storage_controller, array &$values): void {
     parent::preCreate($storage_controller, $values);
     $values += [
       'user_id' => \Drupal::currentUser()->id(),
@@ -96,7 +96,7 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
   /**
    * {@inheritdoc}
    */
-  public function setOwner(UserInterface $account) {
+  public function setOwner(UserInterface $account): self {
     $this->set('user_id', $account->id());
     return $this;
   }
@@ -111,7 +111,7 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
   /**
    * {@inheritdoc}
    */
-  public function setCreatedTime($timestamp) {
+  public function setCreatedTime($timestamp): self {
     $this->set('created', $timestamp);
     return $this;
   }
@@ -119,8 +119,8 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
   /**
    * {@inheritdoc}
    */
-  public function getId() {
-    return $this->get('id')->value;
+  public function getSummaryId(): int {
+    return $this->get('sid')->value;
   }
 
   /**
@@ -133,16 +133,22 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
   /**
    * {@inheritdoc}
    */
-  public function setUuid($uuid) {
+  public function setUuid($uuid): uuid {
     $this->set('uuid', $uuid);
     return $this;
   }
 
-  public function getPackageId() {
+  public function getPackageId(): string {
     return $this->get('package_id')->value;
   }
 
+  public function getTitle(): string {
+    return $this->get('title')->value;
+  }
 
+  public function getCategory(): string {
+    return $this->get('category')->value;
+  }
   /**
    * {@inheritdoc}
    */
@@ -215,6 +221,8 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
 
     $fields['collection_code'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Collection Code'))
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
       ->setDisplayOptions('view', [
         'label' => 'above',
         'weight' => 20,
@@ -326,7 +334,8 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
 
     $fields['download'] = BaseFieldDefinition::create('summary_downloads_field_type')
       ->setLabel(t('Downloads'))
-      ->setDescription(t('Users mentioned in the tweet'))
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
       ->setSettings([
         'max_length' => 255,
         'text_processing' => 0,
@@ -338,12 +347,129 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
         'weight' => 45,
       ])
       ->setDisplayOptions('form', [
-        'type' => 'summary_downloads_widget',
+        'type' => 'summary_downloads_field_type',
         'weight' => 45,
       ])
       ->setCardinality(1)
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
+
+    $fields['branch'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Branch'))
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'weight' => 50,
+      ])
+      ->setDisplayOptions('form', [
+        'weight' => 50,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['pages'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Pages'))
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'weight' => 55,
+      ])
+      ->setDisplayOptions('form', [
+        'weight' => 55,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['government_author'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Government Author'))
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'weight' => 60,
+      ])
+      ->setDisplayOptions('form', [
+        'weight' => 60,
+      ])
+      ->setCardinality(-1)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['sudoc_class_number'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('SuDoc Class Number'))
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'weight' => 65,
+      ])
+      ->setDisplayOptions('form', [
+        'weight' => 65,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['document_type'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Document Type'))
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'weight' => 70,
+      ])
+      ->setDisplayOptions('form', [
+        'weight' => 70,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['title_number'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Title Number'))
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'weight' => 75,
+      ])
+      ->setDisplayOptions('form', [
+        'weight' => 75,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    /** Part Range Goes Here */
+
+    $fields['volume_count'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Volume Count'))
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'weight' => 85,
+      ])
+      ->setDisplayOptions('form', [
+        'weight' => 85,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['publisher'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Publisher'))
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'weight' => 90,
+      ])
+      ->setDisplayOptions('form', [
+        'weight' => 90,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    /** Other identifiers widget goes here */
 
     // $fields['user_mentions_tags'] = BaseFieldDefinition::create('entity_reference')
     //   ->setLabel(t('User Mentions'))
@@ -370,28 +496,6 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
     //     ],
     //   ])
     //   ->setCardinality(-1)
-    //   ->setDisplayConfigurable('form', TRUE)
-    //   ->setDisplayConfigurable('view', TRUE);
-
-
-    // $fields['profile_image'] = BaseFieldDefinition::create('image')
-    //   ->setLabel(t('Profile Image'))
-    //   ->setDescription(t('The Profile Image of the Tweeter.'))
-    //   ->setSettings([
-    //     'uri_scheme' => 'public',
-    //     'file_directory' => 'tweet-feed-tweet-profile-images/[date:custom:Y]-[date:custom:m]',
-    //     'alt_field_required' => FALSE,
-    //     'file_extensions' => 'png jpg jpeg gif',
-    //   ])
-    //   ->setDisplayOptions('view', array(
-    //     'label' => 'hidden',
-    //     'type' => 'default',
-    //     'weight' => 22,
-    //   ))
-    //   ->setDisplayOptions('form', array(
-    //     'weight' => 22,
-    //   ))
-    //   ->setCardinality(1)
     //   ->setDisplayConfigurable('form', TRUE)
     //   ->setDisplayConfigurable('view', TRUE);
 
