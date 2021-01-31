@@ -58,6 +58,12 @@ function govinfo_schema() {
         'unsigned' => TRUE,
         'not null' => TRUE,
       ],
+      'collection_code' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+      ],
       'package_id' => [
         'type' => 'varchar',
         'length' => 255,
@@ -89,10 +95,9 @@ function govinfo_schema() {
         'default' => '',
       ],
       'title'  => [
-        'type' => 'varchar',
-        'length' => 255,
-        'not null' => TRUE,
-        'default' => '',
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => FALSE,
       ],
       'congress'  => [
         'type' => 'varchar',

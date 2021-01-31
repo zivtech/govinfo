@@ -6,6 +6,8 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\Core\Messenger;
+
 use GovInfo\Api;
 use GovInfo\Collection;
 use GovInfo\Package;
@@ -31,7 +33,7 @@ class govinfoCollectionsIndexForm extends ConfigFormBase {
     $api_key = ($config->get('api_key') != NULL) ? $config->get('api_key') : NULL;
 
     $this->db = \Drupal::database();
-    $this->message =  \Drupal::messenger();
+    $this->message = \Drupal::messenger();
     $this->api = (!empty($api_key)) ? new Api(new \GuzzleHttp\Client(), $api_key) : NULL;
     $this->collectionRequestor = new CollectionAbstractRequestor();
     $this->packageRequestor = new PackageAbstractRequestor();
@@ -60,14 +62,19 @@ class govinfoCollectionsIndexForm extends ConfigFormBase {
     $config = $this->config('govinfo.collections');
     $enabled = $config->get('enabled_codes');
     
-    if (empty($enabled)) {
-
-    }
-    else if (empty($this->api)) {
-      $data_gov_link = Link::fromTextAndUrl($this->t('here'), Url::fromUri('https://api.data.gov/signup'));
-      $this->message->addMessage(
+    if (empty($this->api)) {
+      $this->message->addWarning(
         t('You have not provided a govinfo API key. Please provide your govinfo key in the space below and') . ' ' .
-        t('then come back to this collections page. If you need an API key, click ') . $data_gov_link);
+        t('then come back to this collections index page.'));
+      $this->message->addWarning(
+        t('If you need an API key, go to: https://api.data.gov/signup'));
+      $this->message->addWarning(
+        t('If you have a key already, navigate to configuration > web services > govinfo > settings to provide it.'));
+    }
+    elseif (empty($enabled)) {
+      $this->message->addWarning(
+        t('You have not selected any collection codes for indexing. Please go to the collections list and') . ' ' .
+        t('select codes to be indexed.'));
     }
     else {
 
@@ -103,9 +110,8 @@ class govinfoCollectionsIndexForm extends ConfigFormBase {
         '#empty' => $this->t('THERE ARE NO govinfo RECORDS SELECTED FOR INDEXING.'),
         '#default_value' => $enabled,
       ];
+      return parent::buildForm($form, $form_state);
     }
- 
-    return parent::buildForm($form, $form_state);
   }
 
   /**

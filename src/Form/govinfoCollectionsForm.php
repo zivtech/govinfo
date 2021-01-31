@@ -6,6 +6,8 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\Core\Messenger;
+
 use GovInfo\Api;
 use GovInfo\Collection;
 use GovInfo\Requestor\CollectionAbstractRequestor;
@@ -27,9 +29,10 @@ class govinfoCollectionsForm extends ConfigFormBase {
     $config = $this->config('govinfo.settings');
     $api_key = ($config->get('api_key') != NULL) ? $config->get('api_key') : NULL;
 
+    $this->db = \Drupal::database();
+    $this->message = \Drupal::messenger();
+
     if (!empty($api_key)) {
-      $this->db = \Drupal::database();
-      $this->message =  \Drupal::messenger();
       $this->api = new Api(new \GuzzleHttp\Client(), $api_key);
       $this->collection = new Collection($this->api);
       $this->collectionAbstractRequestor = new CollectionAbstractRequestor();
@@ -66,10 +69,13 @@ class govinfoCollectionsForm extends ConfigFormBase {
     $enabled = (!empty($enabled)) ? (array_combine($enabled, $enabled)) : [];
 
     if (empty($this->api)) {
-      $data_gov_link = Link::fromTextAndUrl($this->t('here'), Url::fromUri('https://api.data.gov/signup'));
-      $this->message->addMessage(
+      $this->message->addWarning(
         t('You have not provided a govinfo API key. Please provide your govinfo key in the space below and') . ' ' .
-        t('then come back to this collections page. If you need an API key, click ') . $data_gov_link);
+        t('then come back to this collections page.'));
+      $this->message->addWarning(
+        t('If you need an API key, go to: https://api.data.gov/signup'));
+      $this->message->addWarning(
+        t('If you have a key already, navigate to configuration > web services > govinfo > settings to provide it.'));
     }
     else {
       // Now that we have our key, attempt to pull the collections and store them
@@ -128,9 +134,8 @@ class govinfoCollectionsForm extends ConfigFormBase {
           '#default_value' => $enabled,
         ];
       }
+      return parent::buildForm($form, $form_state);
     }
- 
-    return parent::buildForm($form, $form_state);
   }
 
   /**
@@ -184,11 +189,12 @@ class govinfoCollectionsForm extends ConfigFormBase {
           //$urlParts = explode('?', $item['nextPage']);
           //$code[$collection_code]['url'] = $urlParts[0];
           foreach ($item['packages'] as $package) {
-
             $this->db->insert('govinfo_collection_meta')
               ->fields([
+                'collection_code' => $collection_code,
                 'package_id' => $package['packageId'],
                 'last_modified' => strtotime($package['lastModified']),
+                'package_link' => $package['packageLink'],
                 'doc_class' => $package['docClass'],
                 'title' => $package['title'],
                 'congress' => ($package['congress']) ? $package['congress'] : '',

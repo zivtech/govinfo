@@ -74,6 +74,13 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
   /**
    * {@inheritdoc}
    */
+  public function getSummaryId(): int {
+    return $this->get('sid')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getOwnerId() {
     return $this->get('user_id')->target_id;
   }
@@ -104,8 +111,16 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
   /**
    * {@inheritdoc}
    */
-  public function getCreatedTime() {
-    return $this->get('created')->value;
+  public function getUuid($uuid) {
+    return $this->get('uuid')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUuid($uuid): self {
+    $this->set('uuid', $uuid);
+    return $this;
   }
 
   /**
@@ -116,25 +131,92 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
     return $this;
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function getSummaryId(): int {
-    return $this->get('sid')->value;
+  public function getCreatedTime(): int {
+    return $this->get('created')->value;
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function getUuid($uuid) {
-    return $this->get('uuid')->value;
+  public function setLastModified($timestamp): self {
+    $this->set('last_modified', $timestamp);
+    return $this;
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function setUuid($uuid): uuid {
-    $this->set('uuid', $uuid);
+  public function getLastModified(): int {
+    return $this->get('last_modified')->value;
+  }
+
+  public function setDateIssued($timestamp): self {
+    $this->set('date_issued', $timestamp);
+    return $this;
+  }
+
+  public function getDateIssued(): int {
+    return $this->get('date_issued')->value;
+  }
+
+  public function setTitle($title): self {
+    $this->set('title', $title);
+    return $this;
+  }
+
+  public function getTitle(): string {
+    return $this->get('title')->value;
+  }
+
+  public function setCollectionCode($collection_code): self {
+    $this->set('collection_code', $collection_code);
+    return $this;
+  }
+
+  public function getCollectionCode(): string {
+    return $this->get('collectionCode')->value;
+  }
+
+  public function setCollectionName($collection_name): self {
+    $this->set('collection_name', $collection_name);
+    return $this;
+  }
+
+  public function getCollectionName(): string {
+    return $this->get('collection_name')->value;
+  }
+
+  public function setCategory($category): self {
+    $this->set('category', $category);
+    return $this;
+  }
+
+  public function getCategory(): string {
+    return $this->get('category')->value;
+  }
+
+  public function setDetailsLink($url): self {
+    $value = [
+      'uri' => $url,
+      'title' => t('Details'),
+    ];
+    $this->set('details_link', $value);
+    return $this;
+  }
+
+  public function getDetailsLink() {
+    return $this->get('details_link');
+  }
+
+  public function setGranulesLink($url): self {
+    $value = [
+      'uri' => $url,
+      'title' => t('Granules'),
+    ];
+    $this->set('granules_link', $value);
+    return $this;
+  }
+
+  public function getGranulesLink() {
+    return $this->get('granules_link');
+  }
+
+  public function setPackageId($package_id): self {
+    $this->set('package_id', $package_id);
     return $this;
   }
 
@@ -142,13 +224,119 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
     return $this->get('package_id')->value;
   }
 
-  public function getTitle(): string {
-    return $this->get('title')->value;
+  public function setDownloads($keys, $values) {
+    if (!empty($keys)) {
+      $downloads = [];
+      foreach ($keys as $k => $v) {
+        $downloads[$k] = $v;
+      }
+      $this->set('downloads', $downloads);
+    }
+    return $this;
   }
 
-  public function getCategory(): string {
-    return $this->get('category')->value;
+  public function getDownloads() {
+    return $this->get('downloads')->value;
   }
+
+  public function setBranch($branch) {
+    $this->set('branch', $branch);
+    return $this;
+  }
+
+  public function getBranch() {
+    return $this->get('branch')->value;
+  }
+
+  public function setPages($pages) {
+    $this->set('pages', $pages);
+    return $this;
+  }
+
+  public function getPages() {
+    return $this->get('pages')->value;
+  }
+
+  public function setGovernmentAuthor($government_author) {
+    $this->set('government_author', $government_author);
+    return $this;
+  }
+
+  public function getGovernmentAuthor() {
+    return $this->get('government_author')->value;
+  }
+
+  public function setSudocClassNumber($sudoc_class_number) {
+    $this->set('sudoc_class_number', $sudoc_class_number);
+    return $this;
+  }
+
+  public function getSudocClassNumber() {
+    return $this->get('sudoc_class_number')->value;
+  }
+
+  public function setDocumentType($document_type) {
+    $this->set('document_type', $document_type);
+    return $this;
+  }
+
+  public function getDocumenType() {
+    return $this->get('document_type')->value;
+  }
+
+  public function setTitleNumber($title_number) {
+    $this->set('title_number', $title_number);
+    return $this;
+  }
+
+  public function getTitleNumber() {
+    return $this->get('title_number')->value;
+  }
+
+  public function setPartRange($from, $to) {
+    $range = [
+      'from' => $from,
+      'to' => $to,
+    ];
+    $this->set('part_range', $range);
+    return $this;
+  }
+
+  public function getPartRange() {
+    return $this->get('part_range')->value;
+  }
+
+  public function setVolumeCount($volume_count) {
+    $this->set('volume_count', $volume_count);
+    return $this;
+  }
+
+  public function getVolumeCount() {
+    return $this->get('volume_count')->value;
+  }
+
+  public function setPublisher($publisher): self {
+    $this->set('publisher', $publisher);
+    return $this;
+  }
+
+  public function getPublisher(): string {
+    return $this->get('publisher')->value;
+  }
+
+  public function setOtherIdentifiers(array $other_identifiers): self {
+    $oi = [];
+    foreach ($other_identifiers as $identifier) {
+      $oi[] = $identifier;
+    }
+    $this->set('other_identifiers', $oi);
+    return $this;
+  }
+
+  public function getOtherIdentifiers() {
+    return $this->get('other_identifiers');
+  }
+
   /**
    * {@inheritdoc}
    */
@@ -160,6 +348,16 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
       ->setLabel(t('Summary ID'))
       ->setDescription(t('The Summary entry id.'))
       ->setReadOnly(TRUE);
+
+    // Standard field, unique outside of the scope of the current project.
+    $fields['user_id'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('User ID'))
+      ->setDescription(t('The Drupal user owner ID for this entry.'))
+      ->setReadOnly(FALSE)
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
 
     // Standard field, unique outside of the scope of the current project.
     $fields['uuid'] = BaseFieldDefinition::create('uuid')
@@ -332,7 +530,7 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
     //   ->setDisplayConfigurable('form', TRUE)
     //   ->setDisplayConfigurable('view', TRUE);
 
-    $fields['download'] = BaseFieldDefinition::create('summary_downloads_field_type')
+    $fields['downloads'] = BaseFieldDefinition::create('summary_downloads_field_type')
       ->setLabel(t('Downloads'))
       ->setRevisionable(FALSE)
       ->setTranslatable(FALSE)
@@ -439,7 +637,25 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    /** Part Range Goes Here */
+    $fields['part_range'] = BaseFieldDefinition::create('part_range')
+      ->setLabel(t('Part Range'))
+      ->setSettings([
+        'max_length' => 50,
+        'text_processing' => 0,
+      ])
+      ->setDefaultValue('')
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'string',
+        'weight' => 80,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'part_range',
+        'weight' => 80,
+      ])
+      ->setCardinality(1)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
     $fields['volume_count'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Volume Count'))
@@ -469,35 +685,25 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    /** Other identifiers widget goes here */
-
-    // $fields['user_mentions_tags'] = BaseFieldDefinition::create('entity_reference')
-    //   ->setLabel(t('User Mentions'))
-    //   ->setDescription(t('The users mentioned in a tweet in the form of tags.'))
-    //   ->setSetting('target_type', 'taxonomy_term')
-    //   ->setSetting('handler', 'default:taxonomy_term')
-    //   ->setSetting('handler_settings', [
-    //     'target_bundles' => [
-    //       'twitter_user_mention_terms' => 'twitter_user_mention_terms',
-    //     ],
-    //   ])
-    //   ->setTranslatable(FALSE)
-    //   ->setDisplayOptions('view', [
-    //     'weight' => 17,
-    //   ])
-    //   ->setDisplayOptions('form', [
-    //     'type' => 'entity_reference_autocomplete',
-    //     'weight' => 17,
-    //     'settings' => [
-    //       'match_operator' => 'CONTAINS',
-    //       'size' => '60',
-    //       'autocomplete_type' => 'tags',
-    //       'placeholder' => '',
-    //     ],
-    //   ])
-    //   ->setCardinality(-1)
-    //   ->setDisplayConfigurable('form', TRUE)
-    //   ->setDisplayConfigurable('view', TRUE);
+    $fields['other_identifiers'] = BaseFieldDefinition::create('other_identifier')
+      ->setLabel(t('Other Identifiers'))
+      ->setSettings([
+        'max_length' => 50,
+        'text_processing' => 0,
+      ])
+      ->setDefaultValue('')
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'string',
+        'weight' => 95,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'other_identifiers',
+        'weight' => 95,
+      ])
+      ->setCardinality(-1)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
     return $fields;
   }

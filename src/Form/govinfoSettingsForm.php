@@ -35,6 +35,11 @@ class govinfoSettingsForm extends ConfigFormBase {
     $config = $this->config('govinfo.settings');
     $api_key = ($config->get('api_key') != NULL) ? $config->get('api_key') : NULL;
 
+    // $node =  \Drupal\node\Entity\Node::load(1);
+    // print "<pre>";
+    // print_r($node);
+    // exit();
+
     $data_gov_link = Link::fromTextAndUrl($this->t('here'), Url::fromUri('https://api.data.gov/signup'));
     $form['api_key'] = [
       '#type' => 'textfield',

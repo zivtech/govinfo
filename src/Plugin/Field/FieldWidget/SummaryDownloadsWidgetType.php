@@ -101,7 +101,6 @@ class SummaryDownloadsWidgetType extends WidgetBase {
     if ($this->fieldDefinition->getFieldStorageDefinition()->getCardinality() == 1) {
       $element += [
         '#type' => 'fieldset',
-        
       ];
     }
     return $element;
