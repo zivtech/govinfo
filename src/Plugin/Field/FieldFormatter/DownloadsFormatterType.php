@@ -9,17 +9,17 @@ use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Plugin implementation of the 'summary_downloads_formatter' formatter.
+ * Plugin implementation of the 'downloads_formatter' formatter.
  *
  * @FieldFormatter(
- *   id = "summary_downloads_formatter",
- *   label = @Translation("Summary Downloads"),
+ *   id = "downloads_formatter",
+ *   label = @Translation("Downloads"),
  *   field_types = {
- *     "summary_downloads_field_type"
+ *     "downloads_field_type"
  *   }
  * )
  */
-class SummaryDownloadsFormatterType extends FormatterBase {
+class DownloadsFormatterType extends FormatterBase {
 
   /**
    * {@inheritdoc}
@@ -86,7 +86,7 @@ class SummaryDownloadsFormatterType extends FormatterBase {
     $display = NULL;
     foreach ($values as $key => $value) {
       if (!empty($value)) {
-        $display .= '<div class="summary-document-link"><a class="summary-document-anchor" href="/summary-download/' . base64_encode($value) . '">' . $labels[$key] . '</a></div>';
+        $display .= '<div class="document-link"><a class="document-anchor" href="/govinfo-download/' . base64_encode($value) . '">' . $labels[$key] . '</a></div>';
       }
     }
     return $display;

@@ -11,17 +11,17 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
 
 /**
- * Plugin implementation of the 'summary_download_field_type' field type.
+ * Plugin implementation of the 'download_field_type' field type.
  *
  * @FieldType(
- *   id = "summary_downloads_field_type",
- *   label = @Translation("Summary Downloads"),
+ *   id = "downloads_field_type",
+ *   label = @Translation("Downloads"),
  *   description = @Translation("Downloads for a collection summary."),
- *   default_widget = "summary_downloads_widget",
- *   default_formatter = "summary_downloads_formatter"
+ *   default_widget = "downloads_widget",
+ *   default_formatter = "downloads_formatter"
  * )
  */
-class SummaryDownloadsFieldType extends FieldItemBase {
+class DownloadsFieldType extends FieldItemBase {
 
   /**
    * {@inheritdoc}

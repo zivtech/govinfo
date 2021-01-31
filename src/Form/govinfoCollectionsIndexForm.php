@@ -107,7 +107,7 @@ class govinfoCollectionsIndexForm extends ConfigFormBase {
         '#type' => 'tableselect',
         '#header' => $header,
         '#options' => $options,
-        '#empty' => $this->t('THERE ARE NO govinfo RECORDS SELECTED FOR INDEXING.'),
+        '#empty' => $this->t(''),
         '#default_value' => $enabled,
       ];
       return parent::buildForm($form, $form_state);
@@ -169,8 +169,6 @@ class govinfoCollectionsIndexForm extends ConfigFormBase {
       // print_r($summary);
       // exit();
 
-      //$this->packageRequestor->setDownloadType('pdf');
-      //$pdf = $pack->summaryDownload($this->packageRequestor);
 
       $granules = $this->getGranules($package['packageId']);
     }
@@ -180,15 +178,12 @@ class govinfoCollectionsIndexForm extends ConfigFormBase {
     $pack = new Package($this->api);
     $granules = $pack->granules($this->packageRequestor);
     foreach ($granules['granules'] as $granule) {
-      // print"<pre>";
-      // print_r($granules);
-      // exit();
 
       $this->packageRequestor->setStrGranuleId($granule['granuleId']);
       $granuleSummary = $pack->granuleSummary($this->packageRequestor);
-      // print "<pre>";
-      // print_r($granuleSummary);
-      // exit();
+      print "<pre>";
+      print_r($granuleSummary);
+      exit();
 
     }
 

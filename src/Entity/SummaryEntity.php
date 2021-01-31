@@ -530,7 +530,7 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
     //   ->setDisplayConfigurable('form', TRUE)
     //   ->setDisplayConfigurable('view', TRUE);
 
-    $fields['downloads'] = BaseFieldDefinition::create('summary_downloads_field_type')
+    $fields['downloads'] = BaseFieldDefinition::create('downloads_field_type')
       ->setLabel(t('Downloads'))
       ->setRevisionable(FALSE)
       ->setTranslatable(FALSE)
@@ -545,7 +545,7 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
         'weight' => 45,
       ])
       ->setDisplayOptions('form', [
-        'type' => 'summary_downloads_field_type',
+        'type' => 'downloads_field_type',
         'weight' => 45,
       ])
       ->setCardinality(1)

@@ -7,17 +7,17 @@ use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Plugin implementation of the 'summary_downloads' widget.
+ * Plugin implementation of the 'downloads' widget.
  *
  * @FieldWidget(
- *   id = "summary_downloads_widget",
+ *   id = "downloads_widget",
  *   label = @Translation("Summary Downloads"),
  *   field_types = {
- *     "summary_downloads_field_type"
+ *     "downloads_field_type"
  *   }
  * )
  */
-class SummaryDownloadsWidgetType extends WidgetBase {
+class DownloadsWidgetType extends WidgetBase {
 
   /**
    * {@inheritdoc}

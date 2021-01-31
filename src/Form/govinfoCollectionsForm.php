@@ -159,6 +159,10 @@ class govinfoCollectionsForm extends ConfigFormBase {
         }
       }
 
+      $this->config('govinfo.collections')
+        ->set('enabled_codes', $enabled)
+        ->save();
+
       /**
        * For each enabled item, we need to call an item to get the count. In this,
        * we generate the URL's to be used in our queue. This is better for two reasons:
@@ -180,14 +184,10 @@ class govinfoCollectionsForm extends ConfigFormBase {
           ->condition('doc_class', $collection_code)
           ->execute();
 
-        // Populate
         do {
           $this->collectionAbstractRequestor->setIntPageSize(100);
           $this->collectionAbstractRequestor->setIntOffSet($currentOffset);
           $item = $this->collection->item($this->collectionAbstractRequestor);
-          //$code[$collection_code]['count'] = $item['count'];
-          //$urlParts = explode('?', $item['nextPage']);
-          //$code[$collection_code]['url'] = $urlParts[0];
           foreach ($item['packages'] as $package) {
             $this->db->insert('govinfo_collection_meta')
               ->fields([
@@ -204,12 +204,8 @@ class govinfoCollectionsForm extends ConfigFormBase {
           }
           $currentOffset += 100;
         }
-        while ($package['message'] != 'No results found' && $package['nextPage'] == NULL);
+        while ($item['nextPage'] != NULL);
       }
-
-      $this->config('govinfo.collections')
-        ->set('enabled_codes', $enabled)
-        ->save();
     }
   }
 }
