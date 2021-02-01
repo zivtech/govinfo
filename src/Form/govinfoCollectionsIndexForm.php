@@ -171,7 +171,6 @@ class govinfoCollectionsIndexForm extends ConfigFormBase {
       $sdata = $pack->summary($this->packageRequestor);
 
       $summary = new SummaryEntity();
-      $summary->setOwnerId(1);
       $summary->setTitle($sdata['title']);
       $summary->setCollectionCode($sdata['collectionCode']);
       $summary->setCollectionName($sdata['collectionName']);

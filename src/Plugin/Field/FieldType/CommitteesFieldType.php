@@ -16,7 +16,7 @@ use Drupal\Core\TypedData\DataDefinition;
  * @FieldType(
  *   id = "committees",
  *   label = @Translation("Comittees"),
- *   default_widget = "comittees_widget",
+ *   default_widget = "committees_widget",
  *   default_formatter = "committees_formatter"
  * )
  */
@@ -107,7 +107,7 @@ class CommitteesFieldType extends FieldItemBase {
    */
   public function isEmpty() {
     $empty = TRUE;
-    foreach (['from', 'to'] as $variable) {
+    foreach (['authority_id', 'chamber', 'type', 'committee_name'] as $variable) {
       $x = $this->get($variable)->getValue();
       if (!empty($x) && $x != 0) {
         $empty = FALSE;

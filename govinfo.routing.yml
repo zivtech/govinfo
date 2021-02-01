@@ -1,5 +1,5 @@
 govinfo.general:
-  path: 'admin/config/services/govinfo'
+  path: 'admin/structure/govinfo'
   defaults:
     _controller: '\Drupal\system\Controller\SystemController::overview'
     link_id: 'govinfo.general'
@@ -8,7 +8,7 @@ govinfo.general:
     _permission: 'administer govinfo'
 
 govinfo.settings:
-  path: 'admin/config/services/govinfo/settings'
+  path: 'admin/structure/govinfo/settings'
   defaults:
     _form: '\Drupal\govinfo\Form\govinfoSettingsForm'
     _title: 'Settings'
@@ -16,7 +16,7 @@ govinfo.settings:
     _permission: 'administer govinfo'
 
 govinfo.collections:
-  path: 'admin/config/services/govinfo/collections'
+  path: 'admin/structure/govinfo/collections'
   defaults:
     _form: '\Drupal\govinfo\Form\govinfoCollectionsForm'
     _title: 'Collections'
@@ -24,7 +24,7 @@ govinfo.collections:
     _permission: 'administer govinfo'
 
 govinfo.index_collections:
-  path: 'admin/config/services/govinfo/index-collections'
+  path: 'admin/structure/govinfo/index-collections'
   defaults:
     _form: '\Drupal\govinfo\Form\govinfoCollectionsIndexForm'
     _title: 'Index govinfo Collections'

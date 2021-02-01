@@ -12,7 +12,6 @@ use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManager;
-use Drupal\user\EntityOwnerTrait;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\user\UserInterface;
 use Drupal\file\Entity\File;
@@ -45,9 +44,9 @@ use Drupal\Core\Url;
  *   base_table = "govinfo_summary",
  *   admin_permission = "administer govinfo summary entities",
  *   entity_keys = {
- *     "id" = "sid",
- *     "owner" = "uid",
- *     "uid" = "uid",
+ *     "id" = "id",
+ *     "label" = "title",
+ *     "uuid" = "uuid",
  *   },
  *   links = {
  *     "canonical" = "/admin/structure/govinfo_summary/{summary_entity}",
@@ -61,55 +60,109 @@ use Drupal\Core\Url;
  */
 class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface {
 
-  use EntityOwnerTrait;
+  use EntityChangedTrait;
 
-  public function __construct() {
-    parent::__construct([], 'govinfo_summary');
+  /**
+   * {@inheritdoc}
+   */
+  public static function preCreate(EntityStorageInterface $storage_controller, array &$values) {
+
+    parent::preCreate($storage_controller, $values);
+    // $values += [
+    //   'user_id' => \Drupal::currentUser()->id(),
+    // ];
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function preCreate(EntityStorageInterface $storage_controller, array &$values): void {
-    parent::preCreate($storage_controller, $values);
-    $values += [
-      'user_id' => \Drupal::currentUser()->id(),
-    ];
+  public function getOwner() {
+    return $this->get('user_id')->entity;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getOwnerId() {
+    return $this->get('user_id')->target_id;
+  }
 
-  public function setOwner($owner) {}
-  public function getOwner() {}
-  public function setOwnerId($ownerId) {}
-  public function getOwnerId() {}
+  /**
+   * {@inheritdoc}
+   */
+  public function setOwner(UserInterface $account) {
+    $this->set('user_id', $account->id());
+    return $this;
+  }
 
-  public function setLastModified($timestamp): self {
+  /**
+   * {@inheritdoc}
+   */
+  public function setOwnerId($uid) {
+    $this->set('user_id', $uid);
+    return $this;
+  }
+  /**
+   * {@inheritdoc}
+   */
+  public function getCreatedTime() {
+    return $this->get('created')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setCreatedTime($timestamp) {
+    $this->set('created', $timestamp);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getId() {
+    return $this->get('id')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getUuid($uuid) {
+    return $this->get('uuid')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUuid($uuid) {
+    $this->set('uuid', $uuid);
+    return $this;
+  }
+
+  public function setLastModified($timestamp) {
     $this->set('last_modified', $timestamp);
     return $this;
   }
 
-  public function getLastModified(): int {
+  public function getLastModified() {
     return $this->get('last_modified')->value;
   }
 
-  public function setDateIssued($timestamp): self {
+  public function setDateIssued($timestamp) {
     $this->set('date_issued', $timestamp);
     return $this;
   }
 
-  public function getDateIssued(): int {
+  public function getDateIssued() {
     return $this->get('date_issued')->value;
   }
 
-  public function setTitle($title): self {
+  public function setTitle($title) {
     $this->set('title', $title);
     return $this;
   }
 
   public function getTitle() {
-    print_r($this->toArray());
-    exit();
-
     return $this->get('title')->value;
   }
 
@@ -330,28 +383,33 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
-    $fields += static::ownerBaseFieldDefinitions($entity_type);
 
-    $fields['uid']
-      ->setLabel(t('Authored by'))
-      ->setDescription(t('The username of the content author.'))
-      ->setRevisionable(TRUE)
-      ->setDisplayOptions('view', [
-        'label' => 'hidden',
-        'type' => 'author',
-        'weight' => 0,
-      ])
-      ->setDisplayOptions('form', [
-        'type' => 'entity_reference_autocomplete',
-        'weight' => 5,
-        'settings' => [
-          'match_operator' => 'CONTAINS',
-          'size' => '60',
-          'placeholder' => '',
-        ],
-      ])
-      ->setDisplayConfigurable('form', TRUE);
+    // Standard field, used as unique if primary index.
+    $fields['id'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('ID'))
+      ->setDescription(t('The ID of the summary entity.'))
+      ->setReadOnly(TRUE);
 
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Created'))
+      ->setDescription(t('The time that the entity was created.'));
+
+    // Standard field, unique outside of the scope of the current project.
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Changed'))
+      ->setDescription(t('The time that the entity was last changed.'));
+
+    // Standard field, unique outside of the scope of the current project.
+    $fields['user_id'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('User Id'))
+      ->setDescription(t('The user id of the owner of this tweet.'))
+      ->setReadOnly(FALSE);
+
+    // Standard field, unique outside of the scope of the current project.
+    $fields['uuid'] = BaseFieldDefinition::create('uuid')
+      ->setLabel(t('UUID'))
+      ->setDescription(t('The UUID of the summary entity.'))
+      ->setReadOnly(TRUE);
 
     $fields['last_modified'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(t('Last Modified'))
@@ -722,7 +780,7 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
         'weight' => 93,
       ])
       ->setDisplayOptions('form', [
-        'type' => 'downloads_field_type',
+        'type' => 'committees_field_type',
         'weight' => 93,
       ])
       ->setCardinality(-1)

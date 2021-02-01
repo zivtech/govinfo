@@ -3,8 +3,7 @@ govinfo.general:
   description: 'govinfo api service control center.'
   route_name: govinfo.general
   menu_name: govinfo.general
-  parent: system.admin_config_services
-  weight: 0
+  parent: system.admin_structure
 govinfo.settings:
   title: 'Settings'
   description: 'Configuration options for govinfo data on data.gov'
@@ -22,4 +21,33 @@ govinfo.index_collections:
   description: 'Index site data.'
   route_name: govinfo.index_collections
   parent: govinfo.general
+  weight: 20
+
+
+
+
+
+govinfo.admin.summary:
+  title: 'Summary Entity'
+  description: 'Tweets imported from the Tweet Feed module.'
+  route_name: govinfo.settings
+  parent: govinfo.general
+  weight: 30
+govinfo.admin.summary.settings.fields:
+  title: Manage fields
+  description: 'Manage the custom fields for tweets.'
+  route_name: entity.govinfo_summary.field_ui_fields
+  parent: govinfo.admin.summary
+  weight: 0
+govinfo.admin.summary.settings.form_display:
+  title: Manage form display
+  description: 'Manage the display order for the tweets form.'
+  route_name: entity.entity_form_display.govinfo_summary.default
+  parent: govinfo.admin.summary
+  weight: 10
+govinfo.admin.summary.settings.display:
+  title: Manage display
+  description: 'Manage the display of tweet fields.'
+  route_name: entity.entity_view_display.govinfo_summary.default
+  parent: govinfo.admin.summary
   weight: 20
