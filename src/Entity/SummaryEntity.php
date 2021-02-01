@@ -12,6 +12,7 @@ use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\user\EntityOwnerTrait;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\user\UserInterface;
 use Drupal\file\Entity\File;
@@ -44,8 +45,9 @@ use Drupal\Core\Url;
  *   base_table = "govinfo_summary",
  *   admin_permission = "administer govinfo summary entities",
  *   entity_keys = {
- *     "id" = "id",
- *     "label" = "packageId",
+ *     "id" = "sid",
+ *     "owner" = "uid",
+ *     "uid" = "uid",
  *   },
  *   links = {
  *     "canonical" = "/admin/structure/govinfo_summary/{summary_entity}",
@@ -59,7 +61,7 @@ use Drupal\Core\Url;
  */
 class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface {
 
-  use EntityChangedTrait;
+  use EntityOwnerTrait;
 
   public function __construct() {
     parent::__construct([], 'govinfo_summary');
@@ -75,69 +77,11 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
     ];
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function getSummaryId(): int {
-    return $this->get('sid')->value;
-  }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function getOwnerId() {
-    return $this->get('user_id')->target_id;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setOwnerId($uid) {
-    $this->set('user_id', $uid);
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getOwner() {
-    return $this->get('user_id')->entity;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setOwner(UserInterface $account): self {
-    $this->set('user_id', $account->id());
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getUuid($uuid) {
-    return $this->get('uuid')->value;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setUuid($uuid): self {
-    $this->set('uuid', $uuid);
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setCreatedTime($timestamp): self {
-    $this->set('created', $timestamp);
-    return $this;
-  }
-
-  public function getCreatedTime(): int {
-    return $this->get('created')->value;
-  }
+  public function setOwner($owner) {}
+  public function getOwner() {}
+  public function setOwnerId($ownerId) {}
+  public function getOwnerId() {}
 
   public function setLastModified($timestamp): self {
     $this->set('last_modified', $timestamp);
@@ -386,36 +330,28 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
+    $fields += static::ownerBaseFieldDefinitions($entity_type);
 
-    // Standard field, used as unique if primary index.
-    $fields['sid'] = BaseFieldDefinition::create('integer')
-      ->setLabel(t('Summary ID'))
-      ->setDescription(t('The Summary entry id.'))
-      ->setReadOnly(TRUE);
+    $fields['uid']
+      ->setLabel(t('Authored by'))
+      ->setDescription(t('The username of the content author.'))
+      ->setRevisionable(TRUE)
+      ->setDisplayOptions('view', [
+        'label' => 'hidden',
+        'type' => 'author',
+        'weight' => 0,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'weight' => 5,
+        'settings' => [
+          'match_operator' => 'CONTAINS',
+          'size' => '60',
+          'placeholder' => '',
+        ],
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
-    // Standard field, unique outside of the scope of the current project.
-    $fields['user_id'] = BaseFieldDefinition::create('integer')
-      ->setLabel(t('User ID'))
-      ->setDescription(t('The Drupal user owner ID for this entry.'))
-      ->setReadOnly(FALSE)
-      ->setRevisionable(FALSE)
-      ->setTranslatable(FALSE)
-      ->setDisplayConfigurable('form', FALSE)
-      ->setDisplayConfigurable('view', FALSE);
-
-    // Standard field, unique outside of the scope of the current project.
-    $fields['uuid'] = BaseFieldDefinition::create('uuid')
-      ->setLabel(t('UUID'))
-      ->setDescription(t('The UUID of the summary entity.'))
-      ->setReadOnly(TRUE);
-
-    $fields['created'] = BaseFieldDefinition::create('created')
-      ->setLabel(t('Created'))
-      ->setDescription(t('The time that the entity was created.'));
-
-    $fields['changed'] = BaseFieldDefinition::create('created')
-      ->setLabel(t('Changed'))
-      ->setDescription(t('The time that the entity was changed.'));
 
     $fields['last_modified'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(t('Last Modified'))

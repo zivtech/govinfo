@@ -11,7 +11,7 @@ use Drupal\user\EntityOwnerInterface;
  *
  * @ingroup govinfo
  */
-interface SummaryEntityInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface {
+interface SummaryEntityInterface extends ContentEntityInterface, EntityOwnerInterface {
 
   /**
    * Get the package ID as it is on govinfo.
