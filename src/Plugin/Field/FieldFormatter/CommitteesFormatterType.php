@@ -9,17 +9,17 @@ use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Plugin implementation of the 'downloads_formatter' formatter.
+ * Plugin implementation of the 'committees_formatter' formatter.
  *
  * @FieldFormatter(
- *   id = "downloads_formatter",
- *   label = @Translation("Downloads"),
+ *   id = "committees_formatter",
+ *   label = @Translation("Committees"),
  *   field_types = {
- *     "downloads"
+ *     "Committees"
  *   }
  * )
  */
-class DownloadsFormatterType extends FormatterBase {
+class CommitteesFormatterType extends FormatterBase {
 
   /**
    * {@inheritdoc}
@@ -73,23 +73,16 @@ class DownloadsFormatterType extends FormatterBase {
    */
   protected function viewValue(FieldItemInterface $item) {
     $values = $item->toArray();
-    $labels = [
-      'pdf_link' => 'PDF Summary Document',
-      'xml_link' => 'XML Summary Document',
-      'htm_link' => 'HTML Summary Document',
-      'xls_link' => 'XLS Summary Document',
-      'mods_link' => 'MODS Summary Document',
-      'premis_link' => 'Premis Summary Document',
-      'zip_link' => 'Zip Archive Summary',
-    ];
 
-    $display = NULL;
-    foreach ($values as $key => $value) {
-      if (!empty($value)) {
-        $display .= '<div class="document-link"><a class="document-anchor" href="/govinfo-download/' . base64_encode($value) . '">' . $labels[$key] . '</a></div>';
-      }
-    }
-    return $display;
+
+    // $display = NULL;
+    // foreach ($values as $key => $value) {
+    //   if (!empty($value)) {
+    //     $display .= '<div class="summary-document-link"><a class="summary-document-anchor" href="/summary-download/' . base64_encode($value) . '">' . $labels[$key] . '</div>';
+    //   }
+    // }
+    // return $display;
+    return NULL;
   }
 
 }

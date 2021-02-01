@@ -61,6 +61,10 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
 
   use EntityChangedTrait;
 
+  public function __construct() {
+    parent::__construct([], 'govinfo_summary');
+  }
+
   /**
    * {@inheritdoc}
    */
@@ -158,7 +162,10 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
     return $this;
   }
 
-  public function getTitle(): string {
+  public function getTitle() {
+    print_r($this->toArray());
+    exit();
+
     return $this->get('title')->value;
   }
 
@@ -224,12 +231,10 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
     return $this->get('package_id')->value;
   }
 
-  public function setDownloads($keys, $values) {
-    if (!empty($keys)) {
+  public function setDownloads($download) {
+    if (!empty($download)) {
       $downloads = [];
-      foreach ($keys as $k => $v) {
-        $downloads[$k] = $v;
-      }
+      $downloads[] = $download;
       $this->set('downloads', $downloads);
     }
     return $this;
@@ -257,7 +262,10 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
     return $this->get('pages')->value;
   }
 
-  public function setGovernmentAuthor($government_author) {
+  public function setGovernmentAuthor($government_author1, $government_author2) {
+    $government_author = [];
+    $government_author[]['value'] = $government_author1;
+    $government_author[]['value'] = $government_author2;
     $this->set('government_author', $government_author);
     return $this;
   }
@@ -266,13 +274,13 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
     return $this->get('government_author')->value;
   }
 
-  public function setSudocClassNumber($sudoc_class_number) {
-    $this->set('sudoc_class_number', $sudoc_class_number);
+  public function setSuDocClassNumber($sudoc_class_number) {
+    $this->set('su_doc_class_number', $sudoc_class_number);
     return $this;
   }
 
-  public function getSudocClassNumber() {
-    return $this->get('sudoc_class_number')->value;
+  public function getSuDocClassNumber() {
+    return $this->get('su_doc_class_number')->value;
   }
 
   public function setDocumentType($document_type) {
@@ -282,6 +290,33 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
 
   public function getDocumenType() {
     return $this->get('document_type')->value;
+  }
+
+  public function setCongress($congress) {
+    $this->set('congress', $congress);
+    return $this;
+  }
+
+  public function getCongress() {
+    return $this->get('congress')->value;
+  }
+
+  public function setSession($session) {
+    $this->set('session', $session);
+    return $this;
+  }
+
+  public function getSession() {
+    return $this->get('session')->value;
+  }
+
+  public function setCommittees($committees): self {
+    $this->set('committees', $committees);
+    return $this;
+  }
+
+  public function getCommittees() {
+    return $this->get('commitees')->value;
   }
 
   public function setTitleNumber($title_number) {
@@ -313,6 +348,15 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
 
   public function getVolumeCount() {
     return $this->get('volume_count')->value;
+  }
+
+  public function setVolume($volume) {
+    $this->set('volume', $volume);
+    return $this;
+  }
+
+  public function getVolume() {
+    return $this->get('volume')->value;
   }
 
   public function setPublisher($publisher): self {
@@ -373,7 +417,7 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
       ->setLabel(t('Changed'))
       ->setDescription(t('The time that the entity was changed.'));
 
-    $field['last_modified'] = BaseFieldDefinition::create('timestamp')
+    $fields['last_modified'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(t('Last Modified'))
       ->setDescription(t('The last time the summary was modified in govinfo.'))
       ->setRevisionable(FALSE)
@@ -388,7 +432,7 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    $field['date_issued'] = BaseFieldDefinition::create('timestamp')
+    $fields['date_issued'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(t('Date Issued'))
       ->setDescription(t('The time the summary entry was issued on govinfo.'))
       ->setRevisionable(FALSE)
@@ -530,7 +574,7 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
     //   ->setDisplayConfigurable('form', TRUE)
     //   ->setDisplayConfigurable('view', TRUE);
 
-    $fields['downloads'] = BaseFieldDefinition::create('downloads_field_type')
+    $fields['downloads'] = BaseFieldDefinition::create('downloads')
       ->setLabel(t('Downloads'))
       ->setRevisionable(FALSE)
       ->setTranslatable(FALSE)
@@ -595,8 +639,8 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    $fields['sudoc_class_number'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('SuDoc Class Number'))
+    $fields['su_doc_class_number'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Su Doc Class Number'))
       ->setRevisionable(FALSE)
       ->setTranslatable(FALSE)
       ->setDisplayOptions('view', [
@@ -619,6 +663,34 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
       ])
       ->setDisplayOptions('form', [
         'weight' => 70,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['congress'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Congress'))
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'weight' => 72,
+      ])
+      ->setDisplayOptions('form', [
+        'weight' => 72,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['session'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Session'))
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'weight' => 74,
+      ])
+      ->setDisplayOptions('form', [
+        'weight' => 74,
       ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
@@ -671,6 +743,20 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
+    $fields['volume'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Volume'))
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'weight' => 87,
+      ])
+      ->setDisplayOptions('form', [
+        'weight' => 87,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
     $fields['publisher'] = BaseFieldDefinition::create('text_long')
       ->setLabel(t('Publisher'))
       ->setRevisionable(FALSE)
@@ -682,6 +768,28 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
       ->setDisplayOptions('form', [
         'weight' => 90,
       ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['committees'] = BaseFieldDefinition::create('committees')
+      ->setLabel(t('Committees'))
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
+      ->setSettings([
+        'max_length' => 255,
+        'text_processing' => 0,
+      ])
+      ->setDefaultValue('')
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'string',
+        'weight' => 93,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'downloads_field_type',
+        'weight' => 93,
+      ])
+      ->setCardinality(-1)
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 

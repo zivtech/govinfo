@@ -14,6 +14,8 @@ use GovInfo\Package;
 use GovInfo\Requestor\CollectionAbstractRequestor;
 use GovInfo\Requestor\PackageAbstractRequestor;
 
+use Drupal\govinfo\Entity\SummaryEntity;
+
 /**
  * Class govinfoCollectionsIndexForm.
  */
@@ -161,13 +163,56 @@ class govinfoCollectionsIndexForm extends ConfigFormBase {
 
   private function processPackages(array $packages) {
     $pack = new Package($this->api);
-    foreach ($packages as $package) {
+    foreach ($packages as $key => $package) {
+      if ($key < 1) {
+        continue;
+      }
       $this->packageRequestor->setStrPackageId($package['packageId']);
-      $summary = $pack->summary($this->packageRequestor);
+      $sdata = $pack->summary($this->packageRequestor);
 
-      // print "<pre>";
-      // print_r($summary);
-      // exit();
+      $summary = new SummaryEntity();
+      $summary->setOwnerId(1);
+      $summary->setTitle($sdata['title']);
+      $summary->setCollectionCode($sdata['collectionCode']);
+      $summary->setCollectionName($sdata['collectionName']);
+      $summary->setCategory($sdata['category']);
+      $summary->setDateIssued(strtotime($sdata['dateIssued']));
+      $summary->setDetailsLink($sdata['detailsLink']);
+      $summary->setGranulesLink($sdata['granulesLink']);
+      $summary->setPackageId($sdata['packageId']);
+      $summary->setDownloads($sdata['download']);
+      $summary->setBranch($sdata['branch']);
+      $summary->setPages($sdata['pages']);
+      $summary->setGovernmentAuthor($sdata['govermentAuthor1'], $sdata['governmentAuthor2']);
+      $summary->setSuDocClassNumber($sdata['suDocClassNumber']);
+      $summary->setDocumentType($sdata['documentType']);
+      
+      if (!empty($sdata['committees'])) {
+        $summary->setCommittees($sdata['committees']);
+      }
+
+      if (!empty($sdata['congress'])) {
+        $summary->setCongress($sdata['congress']);
+      }
+
+      if (!empty($sdata['session'])) {
+        $summary->setSession($sdata['session']);
+      }
+
+      if (!empty($sdata['volume'])) {
+        $summary->setVolume($sdata['volume']);
+      }
+
+      $summary->setPublisher($sdata['publisher']);
+      $summary->setOtherIdentifiers($sdata['otherIdentifier']);
+      $summary->setLastModified(strtotime($sdata['lastModified']));
+
+      $summary->save();
+
+
+      print "<pre>";
+      print_r($sdata);
+      exit();
 
 
       $granules = $this->getGranules($package['packageId']);

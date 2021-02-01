@@ -11,6 +11,9 @@ use Drupal\Core\Messenger;
 use GovInfo\Api;
 use GovInfo\Collection;
 use GovInfo\Requestor\CollectionAbstractRequestor;
+
+use Drupal\govinfo\Entity\SummaryEntity;
+
 /**
  * Class govinfoCollectionsForm.
  */
@@ -67,6 +70,17 @@ class govinfoCollectionsForm extends ConfigFormBase {
     $config = $this->config('govinfo.collections');
     $enabled = $config->get('enabled_codes');
     $enabled = (!empty($enabled)) ? (array_combine($enabled, $enabled)) : [];
+
+
+    $entity = \Drupal::entityTypeManager()->getStorage('govinfo_summary')->load(1);
+    print "<pre>";
+
+    print_r($entity->toArray());
+    exit();
+
+
+
+
 
     if (empty($this->api)) {
       $this->message->addWarning(

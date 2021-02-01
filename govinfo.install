@@ -72,7 +72,7 @@ function govinfo_schema() {
       ],
       'last_modified' => [
         'type' => 'int',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'not null' => TRUE,
         'default' => 0,
       ],
@@ -84,7 +84,7 @@ function govinfo_schema() {
       ],
       'last_modified'  => [
         'type' => 'int',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'not null' => TRUE,
         'default' => 0,
       ],
@@ -107,7 +107,7 @@ function govinfo_schema() {
       ],
       'date_issued'  => [
         'type' => 'int',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'not null' => TRUE,
         'default' => 0,
       ],
@@ -121,77 +121,4 @@ function govinfo_schema() {
   ];
 
   return $schema;
-}
-
-/**
- * Add our govinfo_collection_meta table.
- */
-function govinfo_update_9101() {
-  $spec = [
-    'fields' => [
-      'cid' => [
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-      ],
-      'package_id' => [
-        'type' => 'varchar',
-        'length' => 255,
-        'not null' => TRUE,
-        'default' => '',
-      ],
-      'last_modified' => [
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default' => 0,
-      ],
-      'package_link'  => [
-        'type' => 'varchar',
-        'length' => 255,
-        'not null' => TRUE,
-        'default' => '',
-      ],
-      'last_modified'  => [
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default' => 0,
-      ],
-      'doc_class'  => [
-        'type' => 'varchar',
-        'length' => 24,
-        'not null' => TRUE,
-        'default' => '',
-      ],
-      'title'  => [
-        'type' => 'varchar',
-        'length' => 255,
-        'not null' => TRUE,
-        'default' => '',
-      ],
-      'congress'  => [
-        'type' => 'varchar',
-        'length' => 255,
-        'not null' => TRUE,
-        'default' => '',
-      ],
-      'date_issued'  => [
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default' => 0,
-      ],
-    ],
-    'primary key' => ['cid'],
-    'indexes' => [
-      'doc_class' => ['doc_class'],
-      'congress' => ['congress'],
-      'package_id' => ['package_id']
-    ],
-  ];
-
-  $schema = Database::getConnection()->schema();
-  $schema->createTable('govinfo_collection_meta', $spec);
-
 }

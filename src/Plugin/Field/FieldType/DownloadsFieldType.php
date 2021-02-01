@@ -14,7 +14,7 @@ use Drupal\Core\TypedData\DataDefinition;
  * Plugin implementation of the 'download_field_type' field type.
  *
  * @FieldType(
- *   id = "downloads_field_type",
+ *   id = "downloads",
  *   label = @Translation("Downloads"),
  *   description = @Translation("Downloads for a collection summary."),
  *   default_widget = "downloads_widget",

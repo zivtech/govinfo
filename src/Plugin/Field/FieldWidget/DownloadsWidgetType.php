@@ -13,7 +13,7 @@ use Drupal\Core\Form\FormStateInterface;
  *   id = "downloads_widget",
  *   label = @Translation("Summary Downloads"),
  *   field_types = {
- *     "downloads_field_type"
+ *     "downloads"
  *   }
  * )
  */
