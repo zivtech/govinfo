@@ -21,10 +21,10 @@ class SummaryEntityAccessControlHandler extends EntityAccessControlHandler {
     /** @var \Drupal\govinfo\Entity\SummaryEntityInterface $entity */
     switch ($operation) {
       case 'view':
-      $entity->getHashtags();
-      if (!$entity->isQuotedOrRepliedTweet()) {
-        return AccessResult::allowedIfHasPermission($account, 'access content');
-      }
+
+      // if (!$entity->isQuotedOrRepliedTweet()) {
+      //   return AccessResult::allowedIfHasPermission($account, 'access content');
+      // }
       return AccessResult::allowedIfHasPermission($account, 'access content');
 
       case 'update':

@@ -4,6 +4,7 @@ namespace Drupal\govinfo\Form;
 
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger;
 
 /**
  * Form controller for Summary entity edit forms.
@@ -29,6 +30,8 @@ class SummaryEntityForm extends ContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     $entity = &$this->entity;
+    $status = parent::save($form, $form_state);
+    $this->message = \Drupal::messenger();
 
     switch ($status) {
       case SAVED_NEW:

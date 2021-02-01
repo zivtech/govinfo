@@ -4,24 +4,25 @@ govinfo.general:
   route_name: govinfo.general
   menu_name: govinfo.general
   parent: system.admin_structure
+
 govinfo.settings:
   title: 'Settings'
   description: 'Configuration options for govinfo data on data.gov'
   route_name: govinfo.settings
   parent: govinfo.general
-  weight: 0
+  weight: 10
 govinfo.collections:
   title: 'Collections'
   description: 'Select govinfo collections to make available on our site.'
   route_name: govinfo.collections
   parent: govinfo.general
-  weight: 10
+  weight: 20
 govinfo.index_collections:
   title: 'Index'
   description: 'Index site data.'
   route_name: govinfo.index_collections
   parent: govinfo.general
-  weight: 20
+  weight: 30
 
 
 

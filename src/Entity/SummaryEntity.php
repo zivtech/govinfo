@@ -49,10 +49,10 @@ use Drupal\Core\Url;
  *     "uuid" = "uuid",
  *   },
  *   links = {
- *     "canonical" = "/admin/structure/govinfo_summary/{summary_entity}",
+ *     "canonical" = "/admin/structure/govinfo_summary/{govinfo_summary}",
  *     "add-form" = "/admin/structure/govinfo_summary/add",
- *     "edit-form" = "/admin/structure/govinfo_summary/{summary_entity}/edit",
- *     "delete-form" = "/admin/structure/govinfo_summary/{summary_entity}/delete",
+ *     "edit-form" = "/admin/structure/govinfo_summary/{govinfo_summary}/edit",
+ *     "delete-form" = "/admin/structure/govinfo_summary/{govinfo_summary}/delete",
  *     "collection" = "/admin/structure/govinfo_summary",
  *   },
  *   field_ui_base_route = "govinfo_summary.settings"
@@ -120,7 +120,7 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
   /**
    * {@inheritdoc}
    */
-  public function getId() {
+  public function getSummaryId() {
     return $this->get('id')->value;
   }
 
@@ -166,34 +166,34 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
     return $this->get('title')->value;
   }
 
-  public function setCollectionCode($collection_code): self {
+  public function setCollectionCode($collection_code) {
     $this->set('collection_code', $collection_code);
     return $this;
   }
 
-  public function getCollectionCode(): string {
+  public function getCollectionCode() {
     return $this->get('collectionCode')->value;
   }
 
-  public function setCollectionName($collection_name): self {
+  public function setCollectionName($collection_name) {
     $this->set('collection_name', $collection_name);
     return $this;
   }
 
-  public function getCollectionName(): string {
+  public function getCollectionName() {
     return $this->get('collection_name')->value;
   }
 
-  public function setCategory($category): self {
+  public function setCategory($category) {
     $this->set('category', $category);
     return $this;
   }
 
-  public function getCategory(): string {
+  public function getCategory() {
     return $this->get('category')->value;
   }
 
-  public function setDetailsLink($url): self {
+  public function setDetailsLink($url) {
     $value = [
       'uri' => $url,
       'title' => t('Details'),
@@ -206,7 +206,7 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
     return $this->get('details_link');
   }
 
-  public function setGranulesLink($url): self {
+  public function setGranulesLink($url) {
     $value = [
       'uri' => $url,
       'title' => t('Granules'),
@@ -219,12 +219,12 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
     return $this->get('granules_link');
   }
 
-  public function setPackageId($package_id): self {
+  public function setPackageId($package_id) {
     $this->set('package_id', $package_id);
     return $this;
   }
 
-  public function getPackageId(): string {
+  public function getPackageId() {
     return $this->get('package_id')->value;
   }
 
