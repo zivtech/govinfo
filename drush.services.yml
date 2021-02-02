@@ -1,0 +1,5 @@
+services:
+  govinfo.commands:
+    class: \Drupal\govinfo\Commands\govinfoCommands
+    tags:
+      - { name: drush.command }

@@ -40,6 +40,13 @@ function govinfo_schema() {
         'not null' => TRUE,
         'default' => 0,
       ],
+      'last_indexed' => [
+        'type' => 'int',
+        'size' => 'big',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
     ],
     'primary key' => ['code'],
   ];
