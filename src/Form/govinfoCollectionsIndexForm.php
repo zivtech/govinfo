@@ -164,13 +164,23 @@ class govinfoCollectionsIndexForm extends ConfigFormBase {
   private function processPackages(array $packages) {
     $pack = new Package($this->api);
     foreach ($packages as $key => $package) {
-      if ($key < 1) {
-        continue;
-      }
+
       $this->packageRequestor->setStrPackageId($package['packageId']);
       $sdata = $pack->summary($this->packageRequestor);
 
-      $summary = new SummaryEntity();
+      // $entity = \Drupal::entityTypeManager()->getStorage('govinfo_summary')->load(1);
+      // print "<pre>";
+      // print_r($entity->toArray());
+      // exit();
+
+      $uuid_service = \Drupal::service('uuid');
+      $uuid = $uuid_service->generate();
+
+      $summary = new SummaryEntity([], 'govinfo_summary');
+      $summary->setUuid($uuid);
+      $summary->setOwnerId(1);
+      $summary->setCreatedTime(time());
+      $summary->setChangedTime(time());
       $summary->setTitle($sdata['title']);
       $summary->setCollectionCode($sdata['collectionCode']);
       $summary->setCollectionName($sdata['collectionName']);
@@ -182,7 +192,7 @@ class govinfoCollectionsIndexForm extends ConfigFormBase {
       $summary->setDownloads($sdata['download']);
       $summary->setBranch($sdata['branch']);
       $summary->setPages($sdata['pages']);
-      $summary->setGovernmentAuthor($sdata['govermentAuthor1'], $sdata['governmentAuthor2']);
+      $summary->setGovernmentAuthor($sdata['governmentAuthor1'], $sdata['governmentAuthor2']);
       $summary->setSuDocClassNumber($sdata['suDocClassNumber']);
       $summary->setDocumentType($sdata['documentType']);
       
@@ -205,16 +215,9 @@ class govinfoCollectionsIndexForm extends ConfigFormBase {
       $summary->setPublisher($sdata['publisher']);
       $summary->setOtherIdentifiers($sdata['otherIdentifier']);
       $summary->setLastModified(strtotime($sdata['lastModified']));
-
       $summary->save();
 
-
-      print "<pre>";
-      print_r($sdata);
-      exit();
-
-
-      $granules = $this->getGranules($package['packageId']);
+      //$granules = $this->getGranules($package['packageId']);
     }
   }
 

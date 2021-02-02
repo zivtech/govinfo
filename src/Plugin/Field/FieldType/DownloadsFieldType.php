@@ -59,6 +59,10 @@ class DownloadsFieldType extends FieldItemBase {
       ->setLabel(new TranslatableMarkup('Mods Link'))
       ->setRequired(FALSE);
 
+    $properties['uslm_link'] = DataDefinition::create('string')
+      ->setLabel(new TranslatableMarkup('USLM Link'))
+      ->setRequired(FALSE);
+
     $properties['premis_link'] = DataDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Premis Link'))
       ->setRequired(FALSE);
@@ -107,6 +111,12 @@ class DownloadsFieldType extends FieldItemBase {
           'default' => '',
         ],
         'premis_link' => [
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => TRUE,
+          'default' => '',
+        ],
+        'uslm_link' => [
           'type' => 'varchar',
           'length' => 255,
           'not null' => TRUE,

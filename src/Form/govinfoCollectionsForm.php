@@ -71,17 +71,6 @@ class govinfoCollectionsForm extends ConfigFormBase {
     $enabled = $config->get('enabled_codes');
     $enabled = (!empty($enabled)) ? (array_combine($enabled, $enabled)) : [];
 
-
-    $entity = \Drupal::entityTypeManager()->getStorage('govinfo_summary')->load(1);
-    print "<pre>";
-
-    print_r($entity->toArray());
-    exit();
-
-
-
-
-
     if (empty($this->api)) {
       $this->message->addWarning(
         t('You have not provided a govinfo API key. Please provide your govinfo key in the space below and') . ' ' .

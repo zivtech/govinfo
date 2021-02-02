@@ -68,9 +68,7 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
   public static function preCreate(EntityStorageInterface $storage_controller, array &$values) {
 
     parent::preCreate($storage_controller, $values);
-    // $values += [
-    //   'user_id' => \Drupal::currentUser()->id(),
-    // ];
+
   }
 
   /**
@@ -102,6 +100,7 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
     $this->set('user_id', $uid);
     return $this;
   }
+
   /**
    * {@inheritdoc}
    */
@@ -117,6 +116,21 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
     return $this;
   }
 
+    /**
+   * {@inheritdoc}
+   */
+  public function getChangedTime() {
+    return $this->get('changed')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setChangedTime($timestamp) {
+    $this->set('changed', $timestamp);
+    return $this;
+  }
+
   /**
    * {@inheritdoc}
    */
@@ -127,16 +141,12 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
   /**
    * {@inheritdoc}
    */
-  public function getUuid($uuid) {
+  public function getUuid() {
     return $this->get('uuid')->value;
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function setUuid($uuid) {
     $this->set('uuid', $uuid);
-    return $this;
   }
 
   public function setLastModified($timestamp) {
@@ -194,11 +204,7 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
   }
 
   public function setDetailsLink($url) {
-    $value = [
-      'uri' => $url,
-      'title' => t('Details'),
-    ];
-    $this->set('details_link', $value);
+    $this->set('details_link', $url);
     return $this;
   }
 
@@ -207,11 +213,7 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
   }
 
   public function setGranulesLink($url) {
-    $value = [
-      'uri' => $url,
-      'title' => t('Granules'),
-    ];
-    $this->set('granules_link', $value);
+    $this->set('granules_link', $url);
     return $this;
   }
 
@@ -231,7 +233,16 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
   public function setDownloads($download) {
     if (!empty($download)) {
       $downloads = [];
-      $downloads[] = $download;
+      $downloads[] = [
+        'pdf_link' => $download['pdfLink'],
+        'xml_link' => $download['xmlLink'],
+        'htm_link' => $download['htmLink'],
+        'xls_link' =>  $download['xlsLink'],
+        'mods_link' => $download['modsLink'],
+        'premis_link' => $download['premisLink'],
+        'uslm_link' => $download['uslmLink'],
+        'zip_link' => $download['zipLink'],
+      ];
       $this->set('downloads', $downloads);
     }
     return $this;
@@ -367,8 +378,11 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
 
   public function setOtherIdentifiers(array $other_identifiers): self {
     $oi = [];
-    foreach ($other_identifiers as $identifier) {
-      $oi[] = $identifier;
+    foreach ($other_identifiers as $key => $value) {
+      $oi[] = [
+        'name' => $key,
+        'value' => $value,
+      ];
     }
     $this->set('other_identifiers', $oi);
     return $this;
@@ -751,7 +765,7 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    $fields['publisher'] = BaseFieldDefinition::create('text_long')
+    $fields['publisher'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Publisher'))
       ->setRevisionable(FALSE)
       ->setTranslatable(FALSE)

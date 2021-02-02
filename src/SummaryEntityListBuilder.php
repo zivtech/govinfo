@@ -17,7 +17,7 @@ class SummaryEntityListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildHeader() {
-    $header['sid'] = $this->t('Summary Id');
+    $header['id'] = $this->t('Summary Id');
     $header['title'] = $this->t('Title');
     $header['package_id'] = $this->t('Package Id');
     return $header + parent::buildHeader();
@@ -28,7 +28,7 @@ class SummaryEntityListBuilder extends EntityListBuilder {
    */
   public function buildRow(EntityInterface $entity) {
     /* @var $entity \Drupal\tweet_feed\Entity\TweetEntity */
-    $row['sid'] = $entity->getSummaryId();
+    $row['id'] = $entity->id();
     $row['title'] = Link::createFromRoute(
       $entity->getTitle(),
       'entity.govinfo_summary.edit_form',

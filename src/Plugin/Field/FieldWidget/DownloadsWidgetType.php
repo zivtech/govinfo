@@ -83,6 +83,12 @@ class DownloadsWidgetType extends WidgetBase {
       '#default_value' => isset($items[$delta]->mods_link) ? $items[$delta]->mods_link : NULL,
       '#size' => 120,
     ];
+    $element['uslm_link'] = [
+      '#type' => 'url',
+      '#title' => 'USLM Link',
+      '#default_value' => isset($items[$delta]->uslm_link) ? $items[$delta]->uslm_link : NULL,
+      '#size' => 120,
+    ];
     $element['premis_link'] = [
       '#type' => 'url',
       '#title' => 'Premis Link',

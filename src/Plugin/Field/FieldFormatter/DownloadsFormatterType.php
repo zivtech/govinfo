@@ -80,6 +80,7 @@ class DownloadsFormatterType extends FormatterBase {
       'xls_link' => 'XLS Summary Document',
       'mods_link' => 'MODS Summary Document',
       'premis_link' => 'Premis Summary Document',
+      'uslm_link' => 'USLM Summary Document',
       'zip_link' => 'Zip Archive Summary',
     ];
 

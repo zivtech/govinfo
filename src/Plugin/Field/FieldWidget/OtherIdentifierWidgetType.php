@@ -53,14 +53,14 @@ class OtherIdentifierWidgetType extends WidgetBase {
       '#title' => 'Name',
       '#default_value' => isset($items[$delta]->name) ? $items[$delta]->name : NULL,
       '#size' => 40,
-      '#maxlength' => 40,
+      '#maxlength' => 255,
     ];
     $element['value'] = [
       '#type' => 'textfield',
       '#title' => 'Value',
       '#default_value' => isset($items[$delta]->value) ? $items[$delta]->value : NULL,
       '#size' => 10,
-      '#maxlength' => 10,
+      '#maxlength' => 255,
     ];
 
     // If cardinality is 1, ensure a label is output for the field by wrapping
