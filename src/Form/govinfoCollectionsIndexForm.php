@@ -211,17 +211,21 @@ class govinfoCollectionsIndexForm extends ConfigFormBase {
       $summary->setPublisher($sdata['publisher']);
       $summary->setOtherIdentifiers($sdata['otherIdentifier']);
       $summary->setLastModified(strtotime($sdata['lastModified']));
-      $summary->save();
+      //$summary->save();
 
-      //$granules = $this->getGranules($package['packageId']);
+      $granules = $this->getGranules($package['packageId']);
     }
   }
 
   private function getGranules(string $packageId) {
     $pack = new Package($this->api);
+    $this->packageRequestor->setStrPackageId($package['packageId']);
     $granules = $pack->granules($this->packageRequestor);
     foreach ($granules['granules'] as $granule) {
-
+      print "<pre>";
+      print_r($granule);
+      exit();
+      
       $this->packageRequestor->setStrGranuleId($granule['granuleId']);
       $granuleSummary = $pack->granuleSummary($this->packageRequestor);
       print "<pre>";

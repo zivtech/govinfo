@@ -75,7 +75,7 @@ class govinfoCommands extends DrushCommands {
        * metadata table for indexing.
        */
       $result = $this->db->select('govinfo_collections', 'gc')
-        ->fields('gc', ['last_index'])
+        ->fields('gc', ['last_indexed'])
         ->condition('gc.code', $code, '=')
         ->execute();
       $last_index = $result->fetchField();
@@ -110,7 +110,7 @@ class govinfoCommands extends DrushCommands {
       
       $time = time();
       $result = $this->db->update('govinfo_collections')
-        ->fields(['last_index' => $time])
+        ->fields(['last_indexed' => $time])
         ->condition('code', $code, '=')
         ->execute();
     }
@@ -155,7 +155,11 @@ class govinfoCommands extends DrushCommands {
       $summary->setDownloads($sdata['download']);
       $summary->setBranch($sdata['branch']);
       $summary->setGovernmentAuthor($sdata['governmentAuthor1'], $sdata['governmentAuthor2']);
-      $summary->setSuDocClassNumber($sdata['suDocClassNumber']);
+
+      if (!empty($sdata['suDocClassNumber'])) {
+        $summary->setSuDocClassNumber($sdata['suDocClassNumber']);
+      }
+     
       $summary->setDocumentType($sdata['documentType']);
       
       if (!empty($sdata['pages'])) {
@@ -179,15 +183,20 @@ class govinfoCommands extends DrushCommands {
       }
 
       $summary->setPublisher($sdata['publisher']);
-      $summary->setOtherIdentifiers($sdata['otherIdentifier']);
+
+      if (!empty($sdata['otherIdentifier'])) {
+        $summary->setOtherIdentifiers($sdata['otherIdentifier']);
+      }
+
       $summary->setLastModified(strtotime($sdata['lastModified']));
       $summary->save();
+
+      $this->getGranules($sdata['packageId']);
 
       $this->db->delete('govinfo_collection_meta')
         ->condition('package_id', $cdata->package_id, '=')
         ->condition('last_modified', $cdata->last_modified, '=')
         ->execute();
-
     }
   }
 
@@ -202,13 +211,51 @@ class govinfoCommands extends DrushCommands {
    */
   public function kill() {
     $this->db->truncate('govinfo_collection_meta')->execute();
+    $this->db->truncate('govinfo_granules_meta')->execute();
     $this->db->truncate('govinfo_summary')->execute();
     $this->db->truncate('govinfo_summary__committees')->execute();
     $this->db->truncate('govinfo_summary__government_author')->execute();
     $this->db->truncate('govinfo_summary__other_identifiers')->execute();
     $result = $this->db->update('govinfo_collections')
       ->fields([
-        'last_index' => 0
+        'last_indexed' => 0
       ])->execute();
+  }
+
+  private function getGranules($package_id) {
+    // Create an index of granules to get
+    $pack = new Package($this->api);
+    $currentOffset = 0;
+    do {
+      $this->packageAbstractRequestor->setIntPageSize(100);
+      $this->packageAbstractRequestor->setIntOffSet($currentOffset);
+      $this->packageAbstractRequestor->setStrPackageId($package_id);
+      $granules = $pack->granules($this->packageAbstractRequestor);
+
+      if (!empty($granules['granules'])) {
+        foreach ($granules['granules'] as $granule) {
+          $this->db->insert('govinfo_granules_meta')
+            ->fields([
+              'package_id' => $package_id,
+              'title' => $granule['title'],
+              'granule_id' => $granule['granuleId'],
+              'granule_link' => $granule['granuleLink'],
+              'granule_class' => $granule['granuleClass'],
+            ])
+            ->execute();
+        }
+      }
+      $currentOffset += 100;
+    } while ($granules['nextPage'] != NULL);
+
+    // $this->packageAbstractRequestor->setStrPackageId($cdata->package_id);
+    // $sdata = $pack->summary($this->packageAbstractRequestor);
+    //   foreach ($granules['granules'] as $granule) {
+    //     $this->packageAbstractRequestor->setStrGranuleId($granule['granuleId']);
+    //     $granuleSummary = $pack->granuleSummary($this->packageAbstractRequestor);
+    //     print "<pre>";
+    //     print_r($granuleSummary);
+    //     exit();
+    //   }
   }
 }

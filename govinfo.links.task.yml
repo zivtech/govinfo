@@ -1,7 +1,4 @@
-govinfo.settings_tab:
-  route_name: govinfo.settings
-  title: 'Settings'
-  base_route: govinfo.settings
+
 entity.govinfo_summary.canonical:
   route_name: entity.govinfo_summary.canonical
   base_route: entity.govinfo_summary.canonical
@@ -16,20 +13,17 @@ entity.govinfo_summary.delete_form:
   title: Delete
   weight: 10
 
-# tweet_profile_entity.settings_tab:
-#   route_name: tweet_profile_entity.settings
-#   title: 'Settings'
-#   base_route: tweet_profile_entity.settings
-# entity.tweet_profile_entity.canonical:
-#   route_name: entity.tweet_profile_entity.canonical
-#   base_route: entity.tweet_profile_entity.canonical
-#   title: 'View'
-# entity.tweet_profile_entity.edit_form:
-#   route_name: entity.tweet_profile_entity.edit_form
-#   base_route: entity.tweet_profile_entity.canonical
-#   title: 'Edit'
-# entity.tweet_profile_entity.delete_form:
-#   route_name:  entity.tweet_profile_entity.delete_form
-#   base_route:  entity.tweet_profile_entity.canonical
-#   title: Delete
-#   weight: 10
+
+entity.granule_entity.canonical:
+  route_name: entity.granule_entity.canonical
+  base_route: entity.granule_entity.canonical
+  title: 'View'
+entity.granule_entity.edit_form:
+  route_name: entity.granule_entity.edit_form
+  base_route: entity.granule_entity.canonical
+  title: 'Edit'
+entity.granule_entity.delete_form:
+  route_name:  entity.granule_entity.delete_form
+  base_route:  entity.granule_entity.canonical
+  title: Delete
+  weight: 10

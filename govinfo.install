@@ -127,5 +127,47 @@ function govinfo_schema() {
     ],
   ];
 
+  $schema['govinfo_granules_meta'] = [
+    'fields' => [
+      'gid' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'package_id' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+      ],
+      'title' => [
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => TRUE,
+      ],
+      'granule_id' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'granule_link'  => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'granule_class'  => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+    ],
+    'primary key' => ['gid'],
+    'indexes' => [
+      'package_id' => ['package_id'],
+      'granule_class' => ['granule_class']
+    ],
+  ];
+
+
+
   return $schema;
 }
