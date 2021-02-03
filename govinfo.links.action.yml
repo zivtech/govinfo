@@ -1,8 +1,8 @@
-entity.govinfo_summary.add_form:
-  route_name: entity.govinfo_summary.add_form
-  title: 'Add Summary'
-  appears_on:
-    - entity.govinfo_summary.collection
+# entity.govinfo_summary.add_form:
+#   route_name: entity.govinfo_summary.add_form
+#   title: 'Add Summary'
+#   appears_on:
+#     - entity.govinfo_summary.collection
 
 # entity.tweet_profile_entity.add_form:
 #   route_name: entity.tweet_profile_entity.add_form

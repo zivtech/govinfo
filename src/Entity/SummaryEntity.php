@@ -234,14 +234,14 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
     if (!empty($download)) {
       $downloads = [];
       $downloads[] = [
-        'pdf_link' => $download['pdfLink'],
-        'xml_link' => $download['xmlLink'],
-        'htm_link' => $download['htmLink'],
-        'xls_link' =>  $download['xlsLink'],
-        'mods_link' => $download['modsLink'],
-        'premis_link' => $download['premisLink'],
-        'uslm_link' => $download['uslmLink'],
-        'zip_link' => $download['zipLink'],
+        'pdf_link' => (!empty($download['pdfLink'])) ? $download['pdfLink'] : NULL,
+        'xml_link' => (!empty($download['xmlLink'])) ? $download['xmlLink'] : NULL,
+        'htm_link' => (!empty($download['htmLink'])) ? $download['htmLink'] : NULL,
+        'xls_link' => (!empty($download['xlsLink'])) ? $download['xlsLink'] : NULL,
+        'mods_link' => (!empty($download['modsLink'])) ? $download['modsLink'] : NULL,
+        'premis_link' => (!empty($download['premisLink'])) ? $download['premisLink'] : NULL,
+        'uslm_link' => (!empty($download['uslmLink'])) ? $download['uslmLink'] : NULL,
+        'zip_link' => (!empty($download['zipLink'])) ? $download['zipLink'] : NULL,
       ];
       $this->set('downloads', $downloads);
     }

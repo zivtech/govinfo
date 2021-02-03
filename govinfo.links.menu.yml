@@ -31,7 +31,7 @@ govinfo.index_collections:
 govinfo.admin.summary:
   title: 'Summary Entity'
   description: 'Tweets imported from the Tweet Feed module.'
-  route_name: govinfo.settings
+  route_name: entity.govinfo_summary.collection
   parent: govinfo.general
   weight: 30
 govinfo.admin.summary.settings.fields:

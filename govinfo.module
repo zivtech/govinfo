@@ -19,8 +19,27 @@ function govinfo_help($route_name, RouteMatchInterface $route_match) {
   }
 }
 
+/**
+ * Implements hook_requirements().
+ */
+function govinfo_requirements($phase) {
 
-function govinfo_rate_check($rate_limit, $rate_limit_remaining) {
+  $requirements = [];
+  if ($phase == 'runtime') {
+    $config = \Drupal::service('config.factory')->get('govinfo.settings');
+    $api_key = ($config->get('api_key') != NULL) ? $config->get('api_key') : NULL;
+    $requirements['govinfo_api'] = [
+      'title' => t('govinfo api'),
+    ];
 
-
+    if (!empty($api_key)) {
+      $requirements['govinfo_api']['severity'] = REQUIREMENT_OK;
+      $requirements['govinfo_api']['description'] = t('You have a govinfo API key assigned');
+    }
+    else {
+      $requirements['govinfo_api']['severity'] = REQUIREMENT_ERROR;
+      $requirements['govinfo_api']['description'] = t('You must assign a govinfo API key in order to use the govinfo entity type.');
+    }
+  }
+  return $requirements;
 }

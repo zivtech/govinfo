@@ -168,10 +168,6 @@ class govinfoCollectionsIndexForm extends ConfigFormBase {
       $this->packageRequestor->setStrPackageId($package['packageId']);
       $sdata = $pack->summary($this->packageRequestor);
 
-      // $entity = \Drupal::entityTypeManager()->getStorage('govinfo_summary')->load(1);
-      // print "<pre>";
-      // print_r($entity->toArray());
-      // exit();
 
       $uuid_service = \Drupal::service('uuid');
       $uuid = $uuid_service->generate();
@@ -236,51 +232,5 @@ class govinfoCollectionsIndexForm extends ConfigFormBase {
 
 
 
-  }
-
-  private function xxxxxx() {
-    /**
-     * For each enabled item, we need to call an item to get the count. In this,
-     * we generate the URL's to be used in our queue. This is better for two reasons:
-     *
-     * 1. We don't have to crawl all the URL's to calculate the URL's
-     * 2. We don't want to wait for all the crawling to happen right now.
-     * 3. We only have a limited number of api calls an hour, so we need
-     *    to meter how much calling we are doing.
-     */
-    $code = [];
-    foreach ($enabled as $collection_code) {
-      $start_date = new \DateTime('1994-01-01T20:18:10Z');
-      $this->collectionAbstractRequestor->setStrCollectionCode($collection_code);
-      $this->collectionAbstractRequestor->setObjStartDate($start_date);
-      $currentOffset = 0;
-
-      // Clear the database of any items in the current collection code.
-      $this->db->delete('govinfo_collection_meta')
-        ->condition('doc_class', $collection_code)
-        ->execute();
-
-      do {
-        $this->collectionAbstractRequestor->setIntPageSize(100);
-        $this->collectionAbstractRequestor->setIntOffSet($currentOffset);
-        $item = $this->collection->item($this->collectionAbstractRequestor);
-        foreach ($item['packages'] as $package) {
-          $this->db->insert('govinfo_collection_meta')
-            ->fields([
-              'collection_code' => $collection_code,
-              'package_id' => $package['packageId'],
-              'last_modified' => strtotime($package['lastModified']),
-              'package_link' => $package['packageLink'],
-              'doc_class' => $package['docClass'],
-              'title' => $package['title'],
-              'congress' => ($package['congress']) ? $package['congress'] : '',
-              'date_issued' => strtotime($package['dateIssued']),
-            ])
-            ->execute();
-        }
-        $currentOffset += 100;
-      }
-      while ($item['nextPage'] != NULL);
-    }
   }
 }

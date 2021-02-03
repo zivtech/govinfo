@@ -3,7 +3,7 @@
 namespace Drupal\govinfo\Commands;
 
 use Drush\Commands\DrushCommands;
-use Drupal\govinfo\Controller\SummaryEntity;
+use Drupal\govinfo\Entity\SummaryEntity;
 use Drupal\Core\Messenger;
 
 use GovInfo\Api;
@@ -35,6 +35,8 @@ class govinfoCommands extends DrushCommands {
 
   protected $collectionAbstractRequestor;
 
+  protected $package;
+
   protected $packageAbstractRequestor;
 
   /**
@@ -48,6 +50,7 @@ class govinfoCommands extends DrushCommands {
     $this->message = \Drupal::messenger();
     $this->api = (!empty($api_key)) ? new Api(new \GuzzleHttp\Client(), $api_key) : NULL;
     $this->collection = new Collection($this->api);
+    $this->package = new Package($this->api);
     $this->collectionAbstractRequestor = new CollectionAbstractRequestor();
     $this->packageAbstractRequestor = new PackageAbstractRequestor();
   }
@@ -124,6 +127,88 @@ class govinfoCommands extends DrushCommands {
    * @aliases gim
    */
   public function import() {
+    $pack = new Package($this->api);
+    $result = $this->db->select('govinfo_collection_meta', 'cm')
+      ->fields('cm')
+      ->orderBy('cid')
+      ->execute();
+    foreach ($result as $cdata) {
+      $this->packageAbstractRequestor->setStrPackageId($cdata->package_id);
+      $sdata = $pack->summary($this->packageAbstractRequestor);
 
+      $uuid_service = \Drupal::service('uuid');
+      $uuid = $uuid_service->generate();
+
+      $summary = new SummaryEntity([], 'govinfo_summary');
+      $summary->setUuid($uuid);
+      $summary->setOwnerId(1);
+      $summary->setCreatedTime(time());
+      $summary->setChangedTime(time());
+      $summary->setTitle($sdata['title']);
+      $summary->setCollectionCode($sdata['collectionCode']);
+      $summary->setCollectionName($sdata['collectionName']);
+      $summary->setCategory($sdata['category']);
+      $summary->setDateIssued(strtotime($sdata['dateIssued']));
+      $summary->setDetailsLink($sdata['detailsLink']);
+      $summary->setGranulesLink($sdata['granulesLink']);
+      $summary->setPackageId($sdata['packageId']);
+      $summary->setDownloads($sdata['download']);
+      $summary->setBranch($sdata['branch']);
+      $summary->setGovernmentAuthor($sdata['governmentAuthor1'], $sdata['governmentAuthor2']);
+      $summary->setSuDocClassNumber($sdata['suDocClassNumber']);
+      $summary->setDocumentType($sdata['documentType']);
+      
+      if (!empty($sdata['pages'])) {
+        $summary->setPages($sdata['pages']);
+      }
+
+      if (!empty($sdata['committees'])) {
+        $summary->setCommittees($sdata['committees']);
+      }
+
+      if (!empty($sdata['congress'])) {
+        $summary->setCongress($sdata['congress']);
+      }
+
+      if (!empty($sdata['session'])) {
+        $summary->setSession($sdata['session']);
+      }
+
+      if (!empty($sdata['volume'])) {
+        $summary->setVolume($sdata['volume']);
+      }
+
+      $summary->setPublisher($sdata['publisher']);
+      $summary->setOtherIdentifiers($sdata['otherIdentifier']);
+      $summary->setLastModified(strtotime($sdata['lastModified']));
+      $summary->save();
+
+      $this->db->delete('govinfo_collection_meta')
+        ->condition('package_id', $cdata->package_id, '=')
+        ->condition('last_modified', $cdata->last_modified, '=')
+        ->execute();
+
+    }
+  }
+
+  /**
+   * Delete everthing (remove before prod)
+   *
+   * @usage govinfo:kill
+   *   Kill the data with fire.
+   *
+   * @command govinfo:kill
+   * @aliases gik
+   */
+  public function kill() {
+    $this->db->truncate('govinfo_collection_meta')->execute();
+    $this->db->truncate('govinfo_summary')->execute();
+    $this->db->truncate('govinfo_summary__committees')->execute();
+    $this->db->truncate('govinfo_summary__government_author')->execute();
+    $this->db->truncate('govinfo_summary__other_identifiers')->execute();
+    $result = $this->db->update('govinfo_collections')
+      ->fields([
+        'last_index' => 0
+      ])->execute();
   }
 }
