@@ -9,7 +9,7 @@ use Drupal\Core\Entity\ContentEntityDeleteForm;
  *
  * @ingroup summary_entity
  */
-class SummaryEntityEntityDeleteForm extends ContentEntityDeleteForm {
+class govinfoSummaryEntityEntityDeleteForm extends ContentEntityDeleteForm {
 
 
 }

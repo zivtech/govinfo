@@ -1,18 +1,18 @@
 <?php
 
-namespace Drupal\govinfo;
+namespace Drupal\govinfo\Entity;
 
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Routing\AdminHtmlRouteProvider;
 use Symfony\Component\Routing\Route;
 
 /**
- * Provides routes for Summary entities.
+ * Provides routes for Granule entities.
  *
  * @see \Drupal\Core\Entity\Routing\AdminHtmlRouteProvider
  * @see \Drupal\Core\Entity\Routing\DefaultHtmlRouteProvider
  */
-class SummaryEntityHtmlRouteProvider extends AdminHtmlRouteProvider {
+class govinfoGranuleEntityHtmlRouteProvider extends AdminHtmlRouteProvider {
 
   /**
    * {@inheritdoc}

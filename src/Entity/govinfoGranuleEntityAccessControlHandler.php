@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\govinfo;
+namespace Drupal\govinfo\Entity;
 
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
@@ -12,7 +12,7 @@ use Drupal\Core\Access\AccessResult;
  *
  * @see \Drupal\govinfo\Entity\GranuleEntity.
  */
-class GranuleEntityAccessControlHandler extends EntityAccessControlHandler {
+class govinfoGranuleEntityAccessControlHandler extends EntityAccessControlHandler {
 
   /**
    * {@inheritdoc}

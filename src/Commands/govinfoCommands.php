@@ -46,15 +46,17 @@ class govinfoCommands extends DrushCommands {
     $config = \Drupal::service('config.factory')->get('govinfo.settings');
     $api_key = ($config->get('api_key') != NULL) ? $config->get('api_key') : NULL;
 
-    $this->db = \Drupal::database();
-    $this->message = \Drupal::messenger();
-    $this->api = (!empty($api_key)) ? new Api(new \GuzzleHttp\Client(), $api_key) : NULL;
-    $this->collection = new Collection($this->api);
-    $this->package = new Package($this->api);
-    $this->collectionAbstractRequestor = new CollectionAbstractRequestor();
-    $this->packageAbstractRequestor = new PackageAbstractRequestor();
+    if (!empty($api_key)) {
+      $this->db = \Drupal::database();
+      $this->message = \Drupal::messenger();
+      $this->api = (!empty($api_key)) ? new Api(new \GuzzleHttp\Client(), $api_key) : NULL;
+      $this->collection = new Collection($this->api);
+      $this->package = new Package($this->api);
+      $this->collectionAbstractRequestor = new CollectionAbstractRequestor();
+      $this->packageAbstractRequestor = new PackageAbstractRequestor();
+    }
   }
-
+  
   /**
    * Index the latest entries for each of the selected collections.
    *

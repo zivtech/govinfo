@@ -14,15 +14,15 @@ entity.govinfo_summary.delete_form:
   weight: 10
 
 
-entity.granule_entity.canonical:
+entity.govinfo_granule.canonical:
   route_name: entity.granule_entity.canonical
   base_route: entity.granule_entity.canonical
   title: 'View'
-entity.granule_entity.edit_form:
+entity.govinfo_granule.edit_form:
   route_name: entity.granule_entity.edit_form
   base_route: entity.granule_entity.canonical
   title: 'Edit'
-entity.granule_entity.delete_form:
+entity.govinfo_granule.delete_form:
   route_name:  entity.granule_entity.delete_form
   base_route:  entity.granule_entity.canonical
   title: Delete

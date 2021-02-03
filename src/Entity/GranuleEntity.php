@@ -27,18 +27,17 @@ use Drupal\Core\Url;
  *   label = @Translation("govinfo Granule"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
- *     "list_builder" = "Drupal\govinfo\GranuleEntityListBuilder",
+ *     "list_builder" = "Drupal\govinfo\Entity\govinfoGranuleEntityListBuilder",
  *     "views_data" = "Drupal\govinfo\Entity\GranuleEntityViewsData",
- *
  *     "form" = {
- *       "default" = "Drupal\govinfo\Form\GranuleEntityForm",
- *       "add" = "Drupal\govinfo\Form\GranuleEntityForm",
- *       "edit" = "Drupal\govinfo\Form\GranuleEntityForm",
- *       "delete" = "Drupal\govinfo\Form\GranuleEntityDeleteForm",
+ *       "default" = "Drupal\govinfo\Form\govinfoGranuleEntityForm",
+ *       "add" = "Drupal\govinfo\Form\govinfoGranuleEntityForm",
+ *       "edit" = "Drupal\govinfo\Form\govinfoGranuleEntityForm",
+ *       "delete" = "Drupal\govinfo\Form\govinfoGranuleEntityDeleteForm",
  *     },
- *     "access" = "Drupal\govinfo\GranuleEntityAccessControlHandler",
+ *     "access" = "Drupal\govinfo\Entity\govinfoGranuleEntityAccessControlHandler",
  *     "route_provider" = {
- *       "html" = "Drupal\govinfo\GranuleEntityHtmlRouteProvider",
+ *       "html" = "Drupal\govinfo\Entity\govinfoGranuleEntityHtmlRouteProvider",
  *     },
  *   },
  *   base_table = "govinfo_granule",
@@ -53,7 +52,7 @@ use Drupal\Core\Url;
  *     "add-form" = "/admin/structure/govinfo_granule/add",
  *     "edit-form" = "/admin/structure/govinfo_granule/{govinfo_granule}/edit",
  *     "delete-form" = "/admin/structure/govinfo_granule/{govinfo_granule}/delete",
- *     "collection" = "/admin/structure/govinfo_granule",
+ *     "collection" = "/admin/structure/govinfo_granule"
  *   },
  *   field_ui_base_route = "govinfo_granule.settings"
  * )

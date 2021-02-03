@@ -11,7 +11,7 @@ use Drupal\Core\Link;
  *
  * @ingroup govinfo
  */
-class GranuleEntityListBuilder extends EntityListBuilder {
+class govinfoSummaryEntityListBuilder extends EntityListBuilder {
 
   /**
    * {@inheritdoc}
@@ -31,9 +31,10 @@ class GranuleEntityListBuilder extends EntityListBuilder {
     $row['id'] = $entity->id();
     $row['title'] = Link::createFromRoute(
       $entity->getTitle(),
-      'entity.govinfo_granule.edit_form',
-      ['govinfo_granule' => $entity->id()]
+      'entity.govinfo_summary.edit_form',
+      ['govinfo_summary' => $entity->id()]
     );
+    $row['package_id'] = $entity->getPackageId();
     return $row + parent::buildRow($entity);
   }
 

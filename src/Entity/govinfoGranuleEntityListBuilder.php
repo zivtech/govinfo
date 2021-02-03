@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\govinfo;
+namespace Drupal\govinfo\Entity;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
@@ -11,15 +11,14 @@ use Drupal\Core\Link;
  *
  * @ingroup govinfo
  */
-class SummaryEntityListBuilder extends EntityListBuilder {
+class govinfoGranuleEntityListBuilder extends EntityListBuilder {
 
   /**
    * {@inheritdoc}
    */
   public function buildHeader() {
     $header['id'] = $this->t('Summary Id');
-    $header['title'] = $this->t('Title');
-    $header['package_id'] = $this->t('Package Id');
+
     return $header + parent::buildHeader();
   }
 
@@ -29,12 +28,7 @@ class SummaryEntityListBuilder extends EntityListBuilder {
   public function buildRow(EntityInterface $entity) {
     /* @var $entity \Drupal\tweet_feed\Entity\TweetEntity */
     $row['id'] = $entity->id();
-    $row['title'] = Link::createFromRoute(
-      $entity->getTitle(),
-      'entity.govinfo_summary.edit_form',
-      ['govinfo_summary' => $entity->id()]
-    );
-    $row['package_id'] = $entity->getPackageId();
+
     return $row + parent::buildRow($entity);
   }
 

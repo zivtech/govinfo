@@ -10,7 +10,7 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @ingroup govinfo
  */
-class SummaryEntitySettingsForm extends FormBase {
+class govinfoSummaryEntitySettingsForm extends FormBase {
 
   /**
    * Returns a unique string identifying the form.

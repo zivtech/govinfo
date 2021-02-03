@@ -27,18 +27,17 @@ use Drupal\Core\Url;
  *   label = @Translation("govinfo Summary"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
- *     "list_builder" = "Drupal\govinfo\SummaryEntityListBuilder",
+ *     "list_builder" = "Drupal\govinfo\govinfoSummaryEntityListBuilder",
  *     "views_data" = "Drupal\govinfo\Entity\SummaryEntityViewsData",
- *
  *     "form" = {
- *       "default" = "Drupal\govinfo\Form\SummaryEntityForm",
- *       "add" = "Drupal\govinfo\Form\SummaryEntityForm",
- *       "edit" = "Drupal\govinfo\Form\SummaryEntityForm",
- *       "delete" = "Drupal\govinfo\Form\SummaryEntityDeleteForm",
+ *       "default" = "Drupal\govinfo\Form\govinfoSummaryEntityForm",
+ *       "add" = "Drupal\govinfo\Form\govinfoSummaryEntityForm",
+ *       "edit" = "Drupal\govinfo\Form\govinfoSummaryEntityForm",
+ *       "delete" = "Drupal\govinfo\Form\govinfoSummaryEntityDeleteForm",
  *     },
- *     "access" = "Drupal\govinfo\SummaryEntityAccessControlHandler",
+ *     "access" = "Drupal\govinfo\govinfoSummaryEntityAccessControlHandler",
  *     "route_provider" = {
- *       "html" = "Drupal\govinfo\SummaryEntityHtmlRouteProvider",
+ *       "html" = "Drupal\govinfo\govinfoSummaryEntityHtmlRouteProvider",
  *     },
  *   },
  *   base_table = "govinfo_summary",

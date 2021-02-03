@@ -11,7 +11,7 @@ use Drupal\Core\Messenger;
  *
  * @ingroup govinfo
  */
-class SummaryEntityForm extends ContentEntityForm {
+class govinfoSummaryEntityForm extends ContentEntityForm {
 
   /**
    * {@inheritdoc}
