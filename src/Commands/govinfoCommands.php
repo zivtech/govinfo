@@ -70,51 +70,53 @@ class govinfoCommands extends DrushCommands {
     $collections_config = \Drupal::service('config.factory')->get('govinfo.collections');
     $codes = $collections_config->get('enabled_codes');
 
-    foreach ($codes as $code) {
+    if (!empty($codes)) {
+      foreach ($codes as $code) {
 
-      /**
-       * Get the last indexed date per code so we can append our entries to end of the
-       * metadata table for indexing.
-       */
-      $result = $this->db->select('govinfo_collections', 'gc')
-        ->fields('gc', ['last_indexed'])
-        ->condition('gc.code', $code, '=')
-        ->execute();
-      $last_index = $result->fetchField();
+        /**
+         * Get the last indexed date per code so we can append our entries to end of the
+         * metadata table for indexing.
+         */
+        $result = $this->db->select('govinfo_collections', 'gc')
+          ->fields('gc', ['last_indexed'])
+          ->condition('gc.code', $code, '=')
+          ->execute();
+        $last_index = $result->fetchField();
 
-      $index_date = new \DateTime(date('Y-m-d', $last_index) . 'T' . date('H:i:s', $last_index) . 'Z');
-      $this->collectionAbstractRequestor->setStrCollectionCode($code);
-      $this->collectionAbstractRequestor->setObjStartDate($index_date);
-      $currentOffset = 0;
+        $index_date = new \DateTime(date('Y-m-d', $last_index) . 'T' . date('H:i:s', $last_index) . 'Z');
+        $this->collectionAbstractRequestor->setStrCollectionCode($code);
+        $this->collectionAbstractRequestor->setObjStartDate($index_date);
+        $currentOffset = 0;
 
-      do {
-        $this->collectionAbstractRequestor->setIntPageSize(100);
-        $this->collectionAbstractRequestor->setIntOffSet($currentOffset);
-        $item = $this->collection->item($this->collectionAbstractRequestor);
+        do {
+          $this->collectionAbstractRequestor->setIntPageSize(100);
+          $this->collectionAbstractRequestor->setIntOffSet($currentOffset);
+          $item = $this->collection->item($this->collectionAbstractRequestor);
 
-        foreach ($item['packages'] as $package) {
-          $this->db->insert('govinfo_collection_meta')
-            ->fields([
-              'collection_code' => $code,
-              'package_id' => $package['packageId'],
-              'last_modified' => strtotime($package['lastModified']),
-              'package_link' => $package['packageLink'],
-              'doc_class' => $package['docClass'],
-              'title' => $package['title'],
-              'congress' => ($package['congress']) ? $package['congress'] : '',
-              'date_issued' => strtotime($package['dateIssued']),
-            ])
-            ->execute();
+          foreach ($item['packages'] as $package) {
+            $this->db->insert('govinfo_collection_meta')
+              ->fields([
+                'collection_code' => $code,
+                'package_id' => $package['packageId'],
+                'last_modified' => strtotime($package['lastModified']),
+                'package_link' => $package['packageLink'],
+                'doc_class' => $package['docClass'],
+                'title' => $package['title'],
+                'congress' => ($package['congress']) ? $package['congress'] : '',
+                'date_issued' => strtotime($package['dateIssued']),
+              ])
+              ->execute();
+          }
+          $currentOffset += 100;
         }
-        $currentOffset += 100;
+        while ($item['nextPage'] != NULL);
+
+        $time = time();
+        $result = $this->db->update('govinfo_collections')
+          ->fields(['last_indexed' => $time])
+          ->condition('code', $code, '=')
+          ->execute();
       }
-      while ($item['nextPage'] != NULL);
-      
-      $time = time();
-      $result = $this->db->update('govinfo_collections')
-        ->fields(['last_indexed' => $time])
-        ->condition('code', $code, '=')
-        ->execute();
     }
   }
 

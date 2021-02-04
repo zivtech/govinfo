@@ -142,7 +142,7 @@ function govinfo_schema() {
       'title' => [
         'type' => 'text',
         'size' => 'medium',
-        'not null' => TRUE,
+        'not null' => FALSE,
       ],
       'granule_id' => [
         'type' => 'varchar',
