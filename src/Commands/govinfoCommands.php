@@ -9,8 +9,10 @@ use Drupal\Core\Messenger;
 use GovInfo\Api;
 use GovInfo\Collection;
 use GovInfo\Package;
+use GovInfo\Published;
 use GovInfo\Requestor\CollectionAbstractRequestor;
 use GovInfo\Requestor\PackageAbstractRequestor;
+use GovInfo\Requestor\PublishedAbstractRequestor;
 
 /**
  * A Drush commandfile.
@@ -39,6 +41,11 @@ class govinfoCommands extends DrushCommands {
 
   protected $packageAbstractRequestor;
 
+  protected $published;
+  
+  protected $publishedAbstractor;
+
+
   /**
    * Load our usable objects into scope.
    */
@@ -52,47 +59,82 @@ class govinfoCommands extends DrushCommands {
       $this->api = (!empty($api_key)) ? new Api(new \GuzzleHttp\Client(), $api_key) : NULL;
       $this->collection = new Collection($this->api);
       $this->package = new Package($this->api);
+      $this->published = new Published($this->api);
       $this->collectionAbstractRequestor = new CollectionAbstractRequestor();
       $this->packageAbstractRequestor = new PackageAbstractRequestor();
+      $this->publishedAbstractRequestor = new PublishedAbstractRequestor();
     }
   }
-  
+
+  /**
+   * Validate the date from our input
+   * https://stackoverflow.com/questions/19271381/correctly-determine-if-date-string-is-a-valid-date-in-that-format
+   */
+  private function validateDate($date, $format = 'Y-m-d') {
+    $d = \DateTime::createFromFormat($format, $date);
+    // The Y ( 4 digits year ) returns TRUE for any integer with any number of 
+    // digits so changing the comparison from == to === fixes the issue.
+    return $d && $d->format($format) === $date;
+  }
+
   /**
    * Index the latest entries for each of the selected collections.
    *
+   * @param $start
+   *   The start date (yyyy-mm-dd) for indexing.
+   * @param $end
+   *   The end date (yyyy-mm-dd) for indexing.
    * @usage govinfo:index
    *   Import data based on enabled code and last imported dates
    *
    * @command govinfo:index
    * @aliases gix
    */
-  public function index() {
+  public function index($start, $end) {
     $collections_config = \Drupal::service('config.factory')->get('govinfo.collections');
     $codes = $collections_config->get('enabled_codes');
 
+    if (!$this->validateDate($start)) {
+      $this->logger()->error("govinfo: Illegal start date. Must be in the formay yyyy-mm-dd");
+      return;
+    }
+
+    if (!$this->validateDate($end)) {
+      $this->logger()->error("govinfo: Illegal end date. Must be in the formay yyyy-mm-dd");
+      return;
+    }
+
     if (!empty($codes)) {
       foreach ($codes as $code) {
-
-        /**
-         * Get the last indexed date per code so we can append our entries to end of the
-         * metadata table for indexing.
-         */
-        $result = $this->db->select('govinfo_collections', 'gc')
-          ->fields('gc', ['last_indexed'])
-          ->condition('gc.code', $code, '=')
-          ->execute();
-        $last_index = $result->fetchField();
-
-        $index_date = new \DateTime(date('Y-m-d', $last_index) . 'T' . date('H:i:s', $last_index) . 'Z');
-        $this->collectionAbstractRequestor->setStrCollectionCode($code);
-        $this->collectionAbstractRequestor->setObjStartDate($index_date);
+        $this->logger()->notice(dt('Retrieving @code for @start through @end.', [
+          '@code' => $code,
+          '@start' => $start,
+          '@end' => $end
+        ]));
+        
+        $this->publishedAbstractRequestor->setStrCollectionCode($code);
+        $this->publishedAbstractRequestor->setStrStartDate($start);
+        $this->publishedAbstractRequestor->setStrEndDate($end);
         $currentOffset = 0;
 
         do {
-          $this->collectionAbstractRequestor->setIntPageSize(100);
-          $this->collectionAbstractRequestor->setIntOffSet($currentOffset);
-          $item = $this->collection->item($this->collectionAbstractRequestor);
+          $this->publishedAbstractRequestor->setIntPageSize(100);
+          $this->publishedAbstractRequestor->setIntOffSet($currentOffset);
+          $item = $this->published->item($this->publishedAbstractRequestor);
 
+          if ($item['count'] > 10000) {
+            $this->logger()->error(dt('Retrieved record set > 10,000 records. Please narrow the API criteria for finding results.'));
+            return;
+          }
+
+          if ($item['count'] < 100) {
+            $this->logger->notice(dt('Retrieving @records records.', ['@records' => $items['count']]));
+          }
+          else {
+            $this->logger->notice(dt('Retrieving @count of @records records.', 
+              ['@count' => $currentOffset, '@records' => $item['count']]));
+          }
+          
           foreach ($item['packages'] as $package) {
             $this->db->insert('govinfo_collection_meta')
               ->fields([
@@ -158,6 +200,15 @@ class govinfoCommands extends DrushCommands {
       $summary->setPackageId($sdata['packageId']);
       $summary->setDownloads($sdata['download']);
       $summary->setBranch($sdata['branch']);
+
+      if (empty($sdata['governmentAuthor1'])) {
+        $sdata['governmentAuthor1'] = '';
+      }
+
+      if (empty($sdata['governmentAuthor2'])) {
+        $sdata['governmentAuthor2'] = '';
+      }
+
       $summary->setGovernmentAuthor($sdata['governmentAuthor1'], $sdata['governmentAuthor2']);
 
       if (!empty($sdata['suDocClassNumber'])) {

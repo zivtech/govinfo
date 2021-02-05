@@ -147,17 +147,17 @@ function govinfo_schema() {
       'granule_id' => [
         'type' => 'varchar',
         'length' => 255,
-        'not null' => TRUE,
+        'not null' => FALSE,
       ],
       'granule_link'  => [
         'type' => 'varchar',
         'length' => 255,
-        'not null' => TRUE,
+        'not null' => FALSE,
       ],
       'granule_class'  => [
         'type' => 'varchar',
         'length' => 255,
-        'not null' => TRUE,
+        'not null' => FALSE,
       ],
     ],
     'primary key' => ['gid'],
