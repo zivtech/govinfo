@@ -7,6 +7,7 @@
 
 use Drupal\Core\Routing\RouteMatchInterface;
 
+
 /**
  * Implements hook_help().
  */
@@ -16,6 +17,66 @@ function govinfo_help($route_name, RouteMatchInterface $route_match) {
       $output = '<h3>' . t('govinfo help') . '</h3>';
       return $output;
     default:
+  }
+}
+
+
+
+function govinfo_rate_limit_cop($remaining, $limit) {
+  // if ($remaining )
+  // \Drupal::logger()->notice(dt('@rll of @rl rate limit requests remaining.', [
+  //   '@rll' => $this->api->getRateLimitRemaining(),
+  //   '@rl' => $this->api->getRateLimit()
+  // ]));
+
+}
+
+/**
+ * Add links (from download fields) to a queue to be indexed and/or stored.
+ * 
+ * @param string $doctype
+ *   The type of document this is. Comes from govinfo
+ * @param array $links
+ *   The associative array of URL's to be stored in the queue. The type is
+ *   the key and the url is in the value.
+ */
+function govinfo_add_links_to_queue($doctype, $date_issued, $links, $summary_id = NULL, $granule_id = NULL): void {
+  $db = \Drupal::database();
+  foreach ($links as $key => $value) {
+    $db->insert('govinfo_document_queue')
+      ->fields([
+        'category' => $doctype,
+        'date_issued' => $date_issued,
+        'document_type' => $key,
+        'summary_id' => $summary_id,
+        'granule_id' => $granule_id,
+        'document_link' => $value,
+      ])
+      ->execute();
+  }
+}
+
+/**
+ * Handles the queue of documents. The priority of documents is as follows.
+ * 
+ * 1. If there is a zip file, get that and nothing else, decompress the file
+ *    and store the files in a manner where they can be found for indexing.
+ * 2. If there is no zip file retrieve documents in the following order:
+ *      a) PDF
+ *      b) premise
+ *      b) mods
+ * 3. Store the files in the file system as follows
+ *      public://govinfo/year_issued/month_issued/day_issued/package_id<-granule_id>.extension
+ */
+
+function govinfo_process_document_queue() {
+  $result = $db->select('govinfo_document_queue', 'dq')
+    ->fields('dq')
+    ->orderBy('did', 'ASC')
+    ->execute();
+  
+  foreach ($result as $ddata) {
+
   }
 }
 

@@ -228,16 +228,7 @@ class GranuleEntity extends ContentEntityBase implements GranuleEntityInterface 
   public function getPackageLink() {
     return $this->get('package_link')->value;
   }
-
-  public function setGranuleId($granule_id) {
-    $this->set('granule_id', $granule_id);
-    return $this;
-  }
-
-  public function getGranuleId() {
-    return $this->get('granule_id')->value;
-  }
-
+  
   public function setDownloads($download) {
     if (!empty($download)) {
       $downloads = [];

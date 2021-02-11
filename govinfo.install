@@ -26,6 +26,12 @@ function govinfo_schema() {
         'not null' => TRUE,
         'default' => '',
       ],
+      'date_issued' => [
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => TRUE,
+        'default' => '',
+      ],
       'package_count' => [
         'type' => 'int',
         'size' => 'big',
@@ -167,7 +173,46 @@ function govinfo_schema() {
     ],
   ];
 
-
+  $schema['govinfo_document_queue'] = [
+    'fields' => [
+      'did' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'category' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+      ],
+      'document_type' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ],
+      'summary_id' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ],
+      'granule_id' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ],
+      'document_link' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ],
+    ],
+    'primary key' => ['did'],
+    'indexes' => [
+      'category' => ['category'],
+      'document_type' => ['document_type'],
+      'summary_id' => ['summary_id'],
+    ],
+  ];
 
   return $schema;
 }

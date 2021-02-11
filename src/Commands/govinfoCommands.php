@@ -3,7 +3,6 @@
 namespace Drupal\govinfo\Commands;
 
 use Drush\Commands\DrushCommands;
-use Drupal\govinfo\Entity\SummaryEntity;
 use Drupal\Core\Messenger;
 
 use GovInfo\Api;
@@ -13,6 +12,9 @@ use GovInfo\Published;
 use GovInfo\Requestor\CollectionAbstractRequestor;
 use GovInfo\Requestor\PackageAbstractRequestor;
 use GovInfo\Requestor\PublishedAbstractRequestor;
+
+use Drupal\govinfo\Entity\SummaryEntity;
+use Drupal\govinfo\Entity\GranuleEntity;
 
 /**
  * A Drush commandfile.
@@ -166,13 +168,14 @@ class govinfoCommands extends DrushCommands {
    * Import data based on what is in the metadata queue. Be sure to respect
    * API limits.
    *
-   * @usage govinfo:import
+   * @usage govinfo:summary
    *   Import data based on enabled code and last imported dates
    *
-   * @command govinfo:import
-   * @aliases gim
+   * @command govinfo:summary
+   * @aliases gims
    */
-  public function import() {
+  public function summary() {
+
     $pack = new Package($this->api);
     $result = $this->db->select('govinfo_collection_meta', 'cm')
       ->fields('cm')
@@ -278,13 +281,18 @@ class govinfoCommands extends DrushCommands {
       $summary->setLastModified(strtotime($sdata['lastModified']));
       $summary->save();
 
-      //$this->getGranules($sdata['packageId']);
+      govinfo_add_links_to_queue('summary', $sdata['dateIssued'], $sdata['download'], $sdata['packageId'], NULL);
+
+      $this->getGranules($sdata['packageId']);
 
       $this->db->delete('govinfo_collection_meta')
         ->condition('package_id', $cdata->package_id, '=')
         ->condition('last_modified', $cdata->last_modified, '=')
         ->execute();
-    }
+      
+      govinfo_rate_limit_cop($this->api->getRateLimitRemaining(), $this->api->getRateLimit());
+
+    } 
   }
 
   /**
@@ -300,10 +308,12 @@ class govinfoCommands extends DrushCommands {
     $this->db->truncate('govinfo_collection_meta')->execute();
     $this->db->truncate('govinfo_granules_meta')->execute();
     $this->db->truncate('govinfo_summary')->execute();
+    $this->db->truncate('govinfo_granule')->execute();
     $this->db->truncate('govinfo_summary__committees')->execute();
     $this->db->truncate('govinfo_summary__government_author')->execute();
     $this->db->truncate('govinfo_summary__other_identifiers')->execute();
     $this->db->truncate('govinfo_summary__parties')->execute();
+    $this->db->truncate('govinfo_document_queue')->execute();
     $result = $this->db->update('govinfo_collections')
       ->fields([
         'last_indexed' => 0
@@ -335,15 +345,94 @@ class govinfoCommands extends DrushCommands {
       }
       $currentOffset += 100;
     } while ($granules['nextPage'] != NULL);
+  }
 
-    // $this->packageAbstractRequestor->setStrPackageId($cdata->package_id);
-    // $sdata = $pack->summary($this->packageAbstractRequestor);
-    //   foreach ($granules['granules'] as $granule) {
-    //     $this->packageAbstractRequestor->setStrGranuleId($granule['granuleId']);
-    //     $granuleSummary = $pack->granuleSummary($this->packageAbstractRequestor);
-    //     print "<pre>";
-    //     print_r($granuleSummary);
-    //     exit();
-    //   }
+  /**
+   * Import data based on what is in the metadata queue. Be sure to respect
+   * API limits.
+   *
+   * @usage govinfo:granules
+   *   Import data based on enabled code and last imported dates
+   *
+   * @command govinfo:granules
+   * @aliases gimg
+   */
+  public function granules() {
+    $pack = new Package($this->api);
+    $result = $this->db->select('govinfo_granules_meta', 'gm')
+      ->fields('gm')
+      ->orderBy('gid')
+      ->execute();
+    foreach ($result as $mdata) {
+      $this->packageAbstractRequestor->setStrPackageId($mdata->package_id);
+      $this->packageAbstractRequestor->setStrGranuleId($mdata->granule_id);
+
+      $gdata = $pack->granuleSummary($this->packageAbstractRequestor);
+
+      $uuid_service = \Drupal::service('uuid');
+      $uuid = $uuid_service->generate();
+
+      $granule = new GranuleEntity([], 'govinfo_granule');
+      $granule->setUuid($uuid);
+      $granule->setOwnerId(1);
+      $granule->setCreatedTime(time());
+      $granule->setChangedTime(time());
+      $granule->setTitle($gdata['title']);
+      $granule->setCollectionCode($gdata['collectionCode']);
+      $granule->setCollectionName($gdata['collectionName']);
+      $granule->setCategory($gdata['category']);
+      $granule->setDateIssued(strtotime($gdata['dateIssued']));
+      $granule->setDetailsLink($gdata['detailsLink']);
+      $granule->setGranulesLink($gdata['granulesLink']);
+      $granule->setPackageId($gdata['packageId']);
+      $granule->setDownloads($gdata['download']);
+      $granule->setLastModified(strtotime($gdata['lastModified']));
+      $granule->setGranuleNumber($mdata->granule_id);
+      $granule->save();
+
+      govinfo_add_links_to_queue('granule', $gdata['dateIssued'], $gdata['download'], $gdata['packageId'], $mdata->granule_id);
+
+      $this->db->delete('govinfo_granules_meta')
+         ->condition('package_id', $gdata['packageId'], '=')
+         ->condition('granule_id', $mdata->granule_id, '=')
+         ->execute();
+
+      govinfo_rate_limit_cop($this->api->getRateLimitRemaining(), $this->api->getRateLimit());
+
+    }
+  }
+
+  /**
+   * Report the current status of the rate limit.
+   *
+   * @usage govinfo:report
+   *   Import data based on enabled code and last imported dates
+   *
+   * @command govinfo:report
+   * @aliases girr
+   */
+  public function rateLimitReport() {
+    // Unfortunately, we need to make a request before we get a response with rate 
+    // limits. Currently no way to query for the rate limit, likely by design. For
+    // this reason, we use the simplest query - that for the collections.
+    $collection = new Collection($this->api);
+    $collection_index = $collection->index();
+    $this->logger()->notice(dt('@rll of @rl rate limit requests remaining.', [
+      '@rll' => $this->api->getRateLimitRemaining(),
+      '@rl' => $this->api->getRateLimit()
+    ]));
+  }
+
+  /**
+   * Go through the document queue and pull files for indexing.
+   *
+   * @usage govinfo:docqueue
+   *   Go through the document queue and pull files for indexing.
+   *
+   * @command govinfo:docqueue
+   * @aliases gidq
+   */
+  public function processDocumentQueue() {
+    govinfo_process_document_queue();
   }
 }
