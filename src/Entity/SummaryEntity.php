@@ -299,6 +299,69 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
     return $this->get('document_type')->value;
   }
 
+  public function setCourtCircuit($court_circuit) {
+    $this->set('court_circuit', $court_circuit);
+    return $this;
+  }
+
+  public function getCourtCircuit() {
+    return $this->get('court_circuit')->value;
+  }
+
+  public function setCourtCode($court_code) {
+    $this->set('court_code', $court_code);
+    return $this;
+  }
+
+  public function getCourtCode() {
+    return $this->get('court_code')->value;
+  }
+
+  public function setCourtState($court_state) {
+    $this->set('court_state', $court_state);
+    return $this;
+  }
+
+  public function getCourtState() {
+    return $this->get('court_state')->value;
+  }
+  
+  public function setCourtType($court_type) {
+    $this->set('court_type', $court_type);
+    return $this;
+  }
+
+  public function getCourtType() {
+    return $this->get('court_type')->value;
+  }
+
+  public function setCaseNumber($case_number) {
+    $this->set('case_number', $case_number);
+    return $this;
+  }
+
+  public function getCaseNumber() {
+    return $this->get('case_number')->value;
+  }
+
+  public function setCaseOffice($case_office) {
+    $this->set('case_office', $case_office);
+    return $this;
+  }
+
+  public function getCaseOffice() {
+    return $this->get('case_office')->value;
+  }
+
+  public function setCaseType($case_type) {
+    $this->set('case_type', $case_type);
+    return $this;
+  }
+
+  public function getCaseType() {
+    return $this->get('case_type')->value;
+  }
+
   public function setCongress($congress) {
     $this->set('congress', $congress);
     return $this;
@@ -391,6 +454,24 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
     return $this->get('other_identifiers');
   }
 
+  public function setParties($parties) {
+    $p = [];
+    foreach ($parties as $party) {
+      $p[] = [
+        'last_name' => (!empty($party['lastName'])) ? $party['lastName'] : NULL,
+        'middle_name' => (!empty($party['middleName'])) ? $party['middleName'] : NULL,
+        'first_name' => (!empty($party['firstName'])) ? $party['firstName'] : NULL,
+        'role' => (!empty($party['role'])) ? $party['role'] : NULL,
+      ];
+    }
+    $this->set('parties', $p);
+    return $this;
+  }
+
+
+  public function getParties() {
+    return $this->get('parties');
+  }
   /**
    * {@inheritdoc}
    */
@@ -652,10 +733,10 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
       ->setTranslatable(FALSE)
       ->setDisplayOptions('view', [
         'label' => 'above',
-        'weight' => 65,
+        'weight' => 63,
       ])
       ->setDisplayOptions('form', [
-        'weight' => 65,
+        'weight' => 63,
       ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
@@ -666,10 +747,108 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
       ->setTranslatable(FALSE)
       ->setDisplayOptions('view', [
         'label' => 'above',
+        'weight' => 65,
+      ])
+      ->setDisplayOptions('form', [
+        'weight' => 65,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['court_circuit'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Court Circuit'))
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'weight' => 68,
+      ])
+      ->setDisplayOptions('form', [
+        'weight' => 68,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['court_code'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Court Code'))
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'weight' => 69,
+      ])
+      ->setDisplayOptions('form', [
+        'weight' => 69,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['court_state'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Court State'))
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
         'weight' => 70,
       ])
       ->setDisplayOptions('form', [
         'weight' => 70,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['court_type'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Court Type'))
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'weight' => 71,
+      ])
+      ->setDisplayOptions('form', [
+        'weight' => 71,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['case_number'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Case Number'))
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'weight' => 72,
+      ])
+      ->setDisplayOptions('form', [
+        'weight' => 72,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['case_office'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Case Office'))
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'weight' => 73,
+      ])
+      ->setDisplayOptions('form', [
+        'weight' => 73,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['case_type'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Case Type'))
+      ->setRevisionable(FALSE)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'weight' => 74,
+      ])
+      ->setDisplayOptions('form', [
+        'weight' => 74,
       ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
@@ -680,10 +859,10 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
       ->setTranslatable(FALSE)
       ->setDisplayOptions('view', [
         'label' => 'above',
-        'weight' => 72,
+        'weight' => 75,
       ])
       ->setDisplayOptions('form', [
-        'weight' => 72,
+        'weight' => 75,
       ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
@@ -694,10 +873,10 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
       ->setTranslatable(FALSE)
       ->setDisplayOptions('view', [
         'label' => 'above',
-        'weight' => 74,
+        'weight' => 76,
       ])
       ->setDisplayOptions('form', [
-        'weight' => 74,
+        'weight' => 76,
       ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
@@ -708,10 +887,10 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
       ->setTranslatable(FALSE)
       ->setDisplayOptions('view', [
         'label' => 'above',
-        'weight' => 75,
+        'weight' => 77,
       ])
       ->setDisplayOptions('form', [
-        'weight' => 75,
+        'weight' => 77,
       ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
@@ -815,6 +994,26 @@ class SummaryEntity extends ContentEntityBase implements SummaryEntityInterface 
       ->setDisplayOptions('form', [
         'type' => 'other_identifiers',
         'weight' => 95,
+      ])
+      ->setCardinality(-1)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['parties'] = BaseFieldDefinition::create('parties')
+      ->setLabel(t('Parties'))
+      ->setSettings([
+        'max_length' => 50,
+        'text_processing' => 0,
+      ])
+      ->setDefaultValue('')
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'string',
+        'weight' => 100,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'parties',
+        'weight' => 100,
       ])
       ->setCardinality(-1)
       ->setDisplayConfigurable('form', TRUE)

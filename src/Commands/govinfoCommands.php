@@ -123,12 +123,12 @@ class govinfoCommands extends DrushCommands {
           $item = $this->published->item($this->publishedAbstractRequestor);
 
           if ($item['count'] > 10000) {
-            $this->logger()->error(dt('Retrieved record set > 10,000 records. Please narrow the API criteria for finding results.'));
+            $this->logger()->error(dt('Retrieved record set > 10,000 records. Please narrow the search criteria for finding results.'));
             return;
           }
 
           if ($item['count'] < 100) {
-            $this->logger->notice(dt('Retrieving @records records.', ['@records' => $items['count']]));
+            $this->logger->notice(dt('Retrieving @records records.', ['@records' => $item['count']]));
           }
           else {
             $this->logger->notice(dt('Retrieving @count of @records records.', 
@@ -214,9 +214,37 @@ class govinfoCommands extends DrushCommands {
       if (!empty($sdata['suDocClassNumber'])) {
         $summary->setSuDocClassNumber($sdata['suDocClassNumber']);
       }
-     
+
       $summary->setDocumentType($sdata['documentType']);
-      
+
+      if (!empty($sdata['courtCircuit'])) {
+        $summary->setCourtCircuit($sdata['courtCircuit']);
+      }
+
+      if (!empty($sdata['courtCode'])) {
+        $summary->setCourtCode($sdata['courtCode']);
+      }
+
+      if (!empty($sdata['courtState'])) {
+        $summary->setCourtState($sdata['courtState']);
+      }
+
+      if (!empty($sdata['courtType'])) {
+        $summary->setCourtType($sdata['courtType']);
+      }
+
+      if (!empty($sdata['caseNumber'])) {
+        $summary->setCaseNumber($sdata['caseNumber']);
+      }
+
+      if (!empty($sdata['caseOffice'])) {
+        $summary->setCaseOffice($sdata['caseOffice']);
+      }
+
+      if (!empty($sdata['caseType'])) {
+        $summary->setCaseType($sdata['caseType']);
+      }
+
       if (!empty($sdata['pages'])) {
         $summary->setPages($sdata['pages']);
       }
@@ -243,10 +271,14 @@ class govinfoCommands extends DrushCommands {
         $summary->setOtherIdentifiers($sdata['otherIdentifier']);
       }
 
+      if (!empty($sdata['parties'])) {
+        $summary->setParties($sdata['parties']);
+      }
+
       $summary->setLastModified(strtotime($sdata['lastModified']));
       $summary->save();
 
-      $this->getGranules($sdata['packageId']);
+      //$this->getGranules($sdata['packageId']);
 
       $this->db->delete('govinfo_collection_meta')
         ->condition('package_id', $cdata->package_id, '=')
@@ -271,6 +303,7 @@ class govinfoCommands extends DrushCommands {
     $this->db->truncate('govinfo_summary__committees')->execute();
     $this->db->truncate('govinfo_summary__government_author')->execute();
     $this->db->truncate('govinfo_summary__other_identifiers')->execute();
+    $this->db->truncate('govinfo_summary__parties')->execute();
     $result = $this->db->update('govinfo_collections')
       ->fields([
         'last_indexed' => 0

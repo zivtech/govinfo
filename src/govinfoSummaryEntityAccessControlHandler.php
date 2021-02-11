@@ -12,7 +12,7 @@ use Drupal\Core\Access\AccessResult;
  *
  * @see \Drupal\govinfo\Entity\SummaryEntity.
  */
-class SummaryEntityAccessControlHandler extends EntityAccessControlHandler {
+class govinfoSummaryEntityAccessControlHandler extends EntityAccessControlHandler {
 
   /**
    * {@inheritdoc}

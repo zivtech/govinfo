@@ -168,7 +168,6 @@ class govinfoCollectionsIndexForm extends ConfigFormBase {
       $this->packageRequestor->setStrPackageId($package['packageId']);
       $sdata = $pack->summary($this->packageRequestor);
 
-
       $uuid_service = \Drupal::service('uuid');
       $uuid = $uuid_service->generate();
 
@@ -191,7 +190,35 @@ class govinfoCollectionsIndexForm extends ConfigFormBase {
       $summary->setGovernmentAuthor($sdata['governmentAuthor1'], $sdata['governmentAuthor2']);
       $summary->setSuDocClassNumber($sdata['suDocClassNumber']);
       $summary->setDocumentType($sdata['documentType']);
-      
+
+      if (!empty($sdata['courtCircuit'])) {
+        $summary->setCourtCircuit($sdata['courtCircuit']);
+      }
+
+      if (!empty($sdata['courtCode'])) {
+        $summary->setCourtCode($sdata['courtCode']);
+      }
+
+      if (!empty($sdata['courtState'])) {
+        $summary->setCourtState($sdata['courtState']);
+      }
+
+      if (!empty($sdata['courtType'])) {
+        $summary->setCourtType($sdata['courtType']);
+      }
+
+      if (!empty($sdata['caseNumber'])) {
+        $summary->setCaseNumber($sdata['caseNumber']);
+      }
+
+      if (!empty($sdata['caseOffice'])) {
+        $summary->setCaseOffice($sdata['caseOffice']);
+      }
+
+      if (!empty($sdata['caseType'])) {
+        $summary->setCaseType($sdata['caseType']);
+      }
+
       if (!empty($sdata['committees'])) {
         $summary->setCommittees($sdata['committees']);
       }
@@ -208,10 +235,25 @@ class govinfoCollectionsIndexForm extends ConfigFormBase {
         $summary->setVolume($sdata['volume']);
       }
 
-      $summary->setPublisher($sdata['publisher']);
-      $summary->setOtherIdentifiers($sdata['otherIdentifier']);
+      if (!empty($sdata['publisher'])) {
+        $summary->setPublisher($sdata['publisher']);
+      }
+      
+      if (!empty($sdata['otherIdentifier'])) {
+        $summary->setOtherIdentifiers($sdata['otherIdentifier']);
+      }
+
+      if (!empty($sdata['parties'])) {
+        $summary->setParties($sdata['parties']);
+      }
+
       $summary->setLastModified(strtotime($sdata['lastModified']));
-      //$summary->save();
+      
+      $summary->save();
+
+      print "<pre>";
+      print_r($sdata);
+      exit();
 
       $granules = $this->getGranules($package['packageId']);
     }
@@ -233,8 +275,5 @@ class govinfoCollectionsIndexForm extends ConfigFormBase {
       exit();
 
     }
-
-
-
   }
 }
