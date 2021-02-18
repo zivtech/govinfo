@@ -78,7 +78,7 @@ class PartiesFieldType extends FieldItemBase {
         ],
         'role' => [
           'type' => 'varchar',
-          'length' => 32,
+          'length' => 255,
           'not null' => TRUE,
         ],
       ],
