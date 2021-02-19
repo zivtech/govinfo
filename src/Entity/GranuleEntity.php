@@ -350,7 +350,7 @@ class GranuleEntity extends ContentEntityBase implements GranuleEntityInterface 
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    $fields['title'] = BaseFieldDefinition::create('string')
+    $fields['title'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Title'))
       ->setRevisionable(FALSE)
       ->setTranslatable(FALSE)
