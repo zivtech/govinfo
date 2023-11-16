@@ -30,7 +30,7 @@ function govinfo_rate_limit_cop($remaining, $limit) {
 
 /**
  * Add links (from download fields) to a queue to be indexed and/or stored.
- * 
+ *
  * @param string $doctype
  *   The type of document this is. Comes from govinfo
  * @param array $links
@@ -55,7 +55,7 @@ function govinfo_add_links_to_queue($doctype, $date_issued, $links, $summary_id 
 
 /**
  * Handles the queue of documents. The priority of documents is as follows.
- * 
+ *
  * 1. If there is a zip file, get that and nothing else, decompress the file
  *    and store the files in a manner where they can be found for indexing.
  * 2. If there is no zip file retrieve documents in the following order:
@@ -67,11 +67,12 @@ function govinfo_add_links_to_queue($doctype, $date_issued, $links, $summary_id 
  */
 
 function govinfo_process_document_queue() {
+  $db = \Drupal::database();
   $result = $db->select('govinfo_document_queue', 'dq')
     ->fields('dq')
     ->orderBy('did', 'ASC')
     ->execute();
-  
+
   foreach ($result as $ddata) {
 
   }
