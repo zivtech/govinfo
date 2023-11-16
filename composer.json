@@ -1,5 +1,5 @@
 {
-    "name": "mbagnall/govinfo",
+    "name": "zivtech/govinfo",
     "description": "A Drupal interface to GovInfo data.",
     "type": "drupal-module",
     "authors": [

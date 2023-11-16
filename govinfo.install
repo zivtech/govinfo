@@ -77,12 +77,6 @@ function govinfo_schema() {
         'not null' => TRUE,
         'default' => '',
       ],
-      'last_modified' => [
-        'type' => 'int',
-        'unsigned' => FALSE,
-        'not null' => TRUE,
-        'default' => 0,
-      ],
       'package_link'  => [
         'type' => 'varchar',
         'length' => 255,
